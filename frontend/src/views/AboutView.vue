@@ -1,8 +1,10 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
+  <div class="page about">
+    <h1>👥 About Us</h1>
+    <p>20+ years in Singapore. Certified mechanics.</p>
   </div>
 </template>
+
 
 <style>
 @media (min-width: 1024px) {

@@ -20,6 +20,12 @@ const routes = [
     // Lazy-loaded Dashboard (create when needed)
     component: () => import('../views/DashboardView.vue'),
   },
+  { path: '/services', name: 'services', component: () => import('../views/ServicesView.vue') },
+  { path: '/pricing', name: 'pricing', component: () => import('../views/PricingView.vue') },
+  { path: '/gallery', name: 'gallery', component: () => import('../views/GalleryView.vue') },
+  { path: '/about', name: 'about', component: () => import('../views/AboutView.vue') },
+  { path: '/contact', name: 'contact', component: () => import('../views/ContactView.vue') },
+  { path: '/book', name: 'book', component: () => import('../views/BookingView.vue') },
 ]
 
 const router = createRouter({
