@@ -17,6 +17,18 @@ import NavBar from './components/NavBar.vue'
 </template>
 
 <style scoped>
+.page {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page h1 {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+  color: #1e3c72;
+}
+
 .app-container {
   /* 👇 FULL WIDTH - No gaps */
   max-width: 100vw !important;
