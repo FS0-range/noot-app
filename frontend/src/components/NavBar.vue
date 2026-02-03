@@ -40,17 +40,12 @@
           📞 Contact
         </router-link>
       </li>
-      <li>
-        <router-link to="/book" class="cta-button" active-class="active">
-          Book Service
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/login" class="login-button" active-class="active">
-          🔐 Login
-        </router-link>
-      </li>
     </ul>
+
+    <div class="nav-actions">
+      <router-link to="/book" class="cta-button">Book Service</router-link>
+      <router-link to="/login" class="login-button">🔐 Login</router-link>
+    </div>
 
     <!-- Mobile Hamburger -->
     <button 
@@ -99,7 +94,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: clamp(1rem, 4vw, 2.5rem);
+  gap: clamp(2rem, 6vw, 4rem);  /* logo → menu → actions */
   padding: clamp(0.75rem, 2vw, 1.25rem) clamp(1rem, 4vw, 3rem);
   background: linear-gradient(135deg, #fdd701 0%, #fafa00 50%, #fea500 100%);
   color: rgb(0, 0, 0);
@@ -117,6 +112,7 @@ onUnmounted(() => {
   box-sizing: border-box;
   padding-left: clamp(1rem, 4vw, 2rem);
   padding-right: clamp(1rem, 4vw, 2rem);
+  flex-wrap: nowrap;            /* Prevent wrapping */
 }
 
 /* Brand - Responsive */
@@ -154,13 +150,14 @@ onUnmounted(() => {
   gap: clamp(0.5rem, 1.5vw, 1.25rem);
   align-items: center;
   flex-shrink: 1;
-  max-width: 60%;
+  max-width: 50%;
+  
 }
 
 .nav-link {
   color: rgba(0, 0, 0, 0.95);
   text-decoration: none;
-  padding: clamp(0.5rem, 1.2vw, 0.75rem) clamp(0.75rem, 1.5vw, 1.25rem);
+  padding: clamp(0.5rem, 1.5vw, 0.875rem) clamp(1rem, 2.5vw, 1.75rem);
   border-radius: clamp(12px, 3vw, 24px);
   font-weight: 600;
   font-size: clamp(0.75rem, 1.5vw, 0.9rem);
@@ -168,6 +165,7 @@ onUnmounted(() => {
   position: relative;
   border: clamp(1px, 0.2vw, 2px) solid transparent;
   white-space: nowrap;
+  
   
 }
 
@@ -209,14 +207,39 @@ onUnmounted(() => {
   background: #ffd700;
 }
 
+/* Login Button */
+.login-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgb(0, 0, 0) !important;
+  font-weight: 600;
+  padding: clamp(0.6rem, 1.5vw, 0.85rem) clamp(1rem, 2vw, 1.5rem) !important;
+  border: clamp(1.5px, 0.3vw, 2px) solid rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 clamp(4px, 1vw, 8px) clamp(10px, 2.5vw, 20px) rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(10px);
+}
+
+.login-button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgb(0, 0, 0) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 clamp(6px, 1.5vw, 12px) clamp(15px, 4vw, 30px) rgba(255, 255, 255, 0.3) !important;
+}
+
+.login-button.active {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: #ffd700 !important;
+  color: #ffd700 !important;
+}
+
 /* CTA Button */
 .nav-actions {
   display: none;
+  flex-shrink: 0;
 }
 
 .cta-button {
   background: linear-gradient(135deg, #ffd700, #ffed4a);
-  color: #1e3c72 !important;
+  color: #000000 !important;
   font-weight: 700;
   padding: clamp(0.6rem, 1.5vw, 0.85rem) clamp(1rem, 2vw, 1.5rem) !important;
   font-size: clamp(0.85rem, 2vw, 1rem) !important;
@@ -225,7 +248,7 @@ onUnmounted(() => {
   line-height: 1.2 !important;
   box-shadow: 0 clamp(4px, 1vw, 8px) clamp(10px, 2.5vw, 20px) rgba(255,215,0,0.4) !important;
   border-radius: clamp(12px, 3vw, 24px) !important;
-  border: none !important;
+  border: 2px solid #000000 !important;
   flex-shrink: 0;
   min-width: 120px;
   white-space: nowrap;
@@ -235,6 +258,39 @@ html, body {
   width: 100%;
   margin: 0;
   padding: 0;
+}
+
+@media (max-width: 1600px) {
+  /* FULL reset for all nav items in mobile menu */
+  .nav-menu a,
+  .nav-menu .nav-link,
+  .nav-menu .cta-button,
+  .nav-menu .login-button {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: rgb(0, 0, 0) !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 1.1rem !important;
+    font-weight: 600;
+    transform: none !important;
+  }
+
+  /* Hover / active states — text only */
+  .nav-menu a:hover,
+  .nav-menu a.active {
+    color: #000000 !important;
+    background: transparent !important;
+    border: 2px solid #000000 !important;
+    border-radius: clamp(12px, 3vw, 24px) !important;
+    padding: 0.5rem 1.25rem !important;
+  }
+
+  /* Remove pseudo elements */
+  .nav-menu a::after {
+    display: none !important;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -248,39 +304,16 @@ html, body {
   .nav-actions {
     display: none !important;  /* Force hide on mobile */
   }
+
 }
 .cta-button:hover {
   transform: translateY(-3px) scale(1.05) !important;
   box-shadow: 0 clamp(10px, 2.5vw, 20px) clamp(25px, 6vw, 50px) rgba(255,215,0,0.6) !important;
 }
 
-/* Login Button */
-.login-button {
-  background: rgba(255, 255, 255, 0.1);
-  color: white !important;
-  font-weight: 600;
-  padding: clamp(0.6rem, 1.5vw, 0.85rem) clamp(1rem, 2vw, 1.5rem) !important;
-  border: clamp(1.5px, 0.3vw, 2px) solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 clamp(4px, 1vw, 8px) clamp(10px, 2.5vw, 20px) rgba(0, 0, 0, 0.2) !important;
-  backdrop-filter: blur(10px);
-}
-
-.login-button:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-  border-color: white !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 clamp(6px, 1.5vw, 12px) clamp(15px, 4vw, 30px) rgba(255, 255, 255, 0.3) !important;
-}
-
-.login-button.active {
-  background: rgba(255, 255, 255, 0.25) !important;
-  border-color: #ffd700 !important;
-  color: #ffd700 !important;
-}
-
-/* Hamburger - Hidden by default on desktop */
+/* Hamburger */
 .hamburger {
-  display: none;
+  display: flex;
   flex-direction: column;
   background: none;
   border: none;
@@ -299,36 +332,22 @@ html, body {
   transform-origin: center;
 }
 
+@media (min-width: 1024px) {
+  .nav-actions {
+    display: flex !important;      /* SHOW both buttons */
+    gap: clamp(0.5rem, 1.5vw, 1rem);  /* Space between CTA/Login */
+    align-items: center;
+  }
+  .hamburger {
+    display: none !important;      /* Hide hamburger */
+  }
+  .nav-menu {
+    gap: clamp(1rem, 2vw, 1.5rem); /* Nav link spacing */
+  }
+}
+
 /* Mobile Menu */
-@media (max-width: 1600px) {
-  /* FULL reset for all nav items in mobile menu */
-  .nav-menu a,
-  .nav-menu .nav-link,
-  .nav-menu .cta-button,
-  .nav-menu .login-button {
-    background: transparent !important;
-    background-color: transparent !important;
-    color: white !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0.5rem 1rem !important;
-    font-size: 1.1rem !important;
-    font-weight: 600;
-    transform: none !important;
-  }
-
-  /* Hover / active states — text only */
-  .nav-menu a:hover,
-  .nav-menu a.active {
-    color: #ffd700 !important;
-    background: transparent !important;
-  }
-
-  /* Remove pseudo elements */
-  .nav-menu a::after {
-    display: none !important;
-  }
-  
+@media (max-width: 1024px) {
   .nav-actions {
     display: none;
   }
