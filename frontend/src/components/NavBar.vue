@@ -108,7 +108,12 @@ onUnmounted(() => {
   z-index: 1000;
   backdrop-filter: blur(20px);
   border-bottom: clamp(1px, 0.3vw, 2px) solid rgba(0, 0, 0, 0.3);
-  width: 100vw;
+  width: 100%;
+  max-width: 100vw;      
+  overflow-x: hidden;    
+  box-sizing: border-box;
+  padding-left: clamp(1rem, 4vw, 2rem);
+  padding-right: clamp(1rem, 4vw, 2rem);
 }
 
 /* Brand - Responsive */
@@ -145,6 +150,8 @@ onUnmounted(() => {
   padding: 0;
   gap: clamp(0.5rem, 1.5vw, 1.25rem);
   align-items: center;
+  flex-shrink: 1;
+  max-width: 60%;
 }
 
 .nav-link {
@@ -208,19 +215,25 @@ onUnmounted(() => {
   background: linear-gradient(135deg, #ffd700, #ffed4a);
   color: #1e3c72 !important;
   font-weight: 700;
-  /* Reduced padding - was too wide */
   padding: clamp(0.6rem, 1.5vw, 0.85rem) clamp(1rem, 2vw, 1.5rem) !important;
-  /* Fixed smaller font size */
   font-size: clamp(0.85rem, 2vw, 1rem) !important;
-  /* Prevent wrapping */
   white-space: nowrap !important;
-  /* Constrain width */
   min-width: max-content;
   line-height: 1.2 !important;
   box-shadow: 0 clamp(4px, 1vw, 8px) clamp(10px, 2.5vw, 20px) rgba(255,215,0,0.4) !important;
   border-radius: clamp(12px, 3vw, 24px) !important;
   border: none !important;
+  flex-shrink: 0;
+  min-width: 120px;
+  white-space: nowrap;
 }
+html, body {
+  overflow-x: hidden;    /* Body never scrolls horizontally */
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 @media (min-width: 1024px) {
   .cta-button {
     padding: 0.75rem 1.75rem !important;  /* Fixed padding */
