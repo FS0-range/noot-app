@@ -1,22 +1,84 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { RouterView } from 'vue-router'
-// import HelloWorld from './components/HelloWorld.vue'
-import NavBar from './components/NavBar.vue' 
+import NavBar from './components/NavBar.vue'
+import LoginView from './views/LoginView.vue'
+
+// Auth state
+const user = ref<{
+  email: string
+  role: 'customer' | 'staff'
+  loggedIn: boolean
+} | null>(null)
+
+const showLogoutConfirm = ref(false)  // 👈 NEW: Confirmation dialog
+
+onMounted(() => {
+  const storedUser = localStorage.getItem('currentUser')
+  if (storedUser) {
+    user.value = JSON.parse(storedUser)
+  }
+})
+
+const handleLogin = (formData: { role: string; email: string; password: string }) => {
+  setTimeout(() => {
+    user.value = {
+      email: formData.email,
+      role: formData.role as 'customer' | 'staff',
+      loggedIn: true
+    }
+    localStorage.setItem('currentUser', JSON.stringify(user.value))
+    console.log('Login successful:', user.value)
+  }, 1500)
+}
+
+const handleRegister = (formData: { email: string; password: string; confirmPassword: string }) => {
+  setTimeout(() => {
+    console.log('Registration successful:', formData.email)
+  }, 1500)
+}
+
+// 👈 NEW: Logout with confirmation
+const confirmLogout = () => {
+  user.value = null
+  localStorage.removeItem('currentUser')
+  showLogoutConfirm.value = false
+  console.log('Logged out successfully')
+}
+
+const cancelLogout = () => {
+  showLogoutConfirm.value = false
+}
+
+const requestLogout = () => {
+  showLogoutConfirm.value = true  // Show confirmation dialog
+}
+const logout = () => {
+  user.value = null
+  localStorage.removeItem('currentUser')
+}
+
 </script>
 
 <template>
   <div class="app-container">
-    <!-- 🚀 Use your NavBar component -->
-    <NavBar />
+    <!-- Navbar ALWAYS shows -->
+    <NavBar 
+      :user="user"
+      :class="{ 'staff-nav': user?.role === 'staff' }"
+      @logout="logout"
+    />
     
-    <!-- Main content (your pages render here) -->
+    <!-- 👈 FIXED: RouterView ALWAYS shows, LoginView is a ROUTE -->
     <main class="main-content">
       <RouterView />
     </main>
   </div>
 </template>
 
+
 <style scoped>
+/* Your existing styles - unchanged */
 .page {
   padding: 2rem;
   max-width: 1200px;
@@ -30,7 +92,6 @@ import NavBar from './components/NavBar.vue'
 }
 
 .app-container {
-  /* 👇 FULL WIDTH - No gaps */
   max-width: 100vw !important;
   width: 100vw !important;
   margin: 0 !important;
@@ -38,12 +99,10 @@ import NavBar from './components/NavBar.vue'
   left: 0 !important;
 }
 
-/* Navbar spacing */
 .main-content {
-  /* Content stays readable */
   padding: clamp(1.5rem, 4vw, 3rem);
   margin: 0 auto;
   max-width: 1400px;
-  min-height: calc(100vh - 80px); /* Navbar height */
+  min-height: calc(100vh - 80px);
 }
 </style>

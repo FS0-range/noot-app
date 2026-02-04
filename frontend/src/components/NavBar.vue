@@ -3,57 +3,82 @@
     <!-- Brand/Logo -->
     <div class="nav-brand">
       <div class="logo-container">
-        <span class="logo-icon">🔧</span>
-        <span class="logo-text">Precision Auto</span>
+        <span class="logo-icon">{{ isStaff ? '⚙️' : '🔧' }}</span>
+        <span class="logo-text">
+          {{ isStaff ? 'Precision Admin' : 'Precision Auto' }}
+        </span>
       </div>
     </div>
     
     <!-- Desktop Menu -->
     <ul class="nav-menu" :class="{ open: isOpen }">
-      <li>
-        <router-link to="/" class="nav-link" active-class="active">
-          🏠 Home
+      <!-- PUBLIC MENU (Guest/Customer) -->
+      <li v-if="!isStaff">
+        <router-link to="/" class="nav-link" active-class="active">🏠 Home</router-link>
+      </li>
+      <li v-if="!isStaff">
+        <router-link to="/services" class="nav-link" active-class="active">🔧 Services</router-link>
+      </li>
+      <li v-if="!isStaff">
+        <router-link to="/pricing" class="nav-link" active-class="active">💰 Pricing</router-link>
+      </li>
+      <li v-if="!isStaff">
+        <router-link to="/gallery" class="nav-link" active-class="active">📸 Gallery</router-link>
+      </li>
+      <li v-if="!isStaff">
+        <router-link to="/about" class="nav-link" active-class="active">👥 About</router-link>
+      </li>
+      <li v-if="!isStaff">
+        <router-link to="/contact" class="nav-link" active-class="active">📞 Contact</router-link>
+      </li>
+      
+      <!-- STAFF ADMIN MENU -->
+      <li v-if="isStaff">
+        <router-link to="/admin" class="nav-link admin-link" active-class="active">
+          🛠️ Admin Dashboard
         </router-link>
       </li>
-      <li>
-        <router-link to="/services" class="nav-link" active-class="active">
-          🔧 Services
+      <li v-if="isStaff">
+        <router-link to="/staff-dashboard" class="nav-link admin-link" active-class="active">
+          📊 Appointments
         </router-link>
       </li>
-      <li>
-        <router-link to="/pricing" class="nav-link" active-class="active">
-          💰 Pricing
+      <li v-if="isStaff">
+        <router-link to="/staff-customers" class="nav-link admin-link" active-class="active">
+          👥 Customers
         </router-link>
       </li>
-      <li>
-        <router-link to="/gallery" class="nav-link" active-class="active">
-          📸 Gallery
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/about" class="nav-link" active-class="active">
-          👥 About
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/contact" class="nav-link" active-class="active">
-          📞 Contact
+      <li v-if="isStaff">
+        <router-link to="/reports" class="nav-link admin-link" active-class="active">
+          📈 Reports
         </router-link>
       </li>
     </ul>
 
+    <!-- Dynamic Actions -->
     <div class="nav-actions">
-      <router-link to="/book" class="cta-button">Book Service</router-link>
-      <router-link to="/login" class="login-button">🔐 Login</router-link>
+      <!-- GUEST: Login -->
+      <router-link v-if="!isLoggedIn" to="/login" class="login-button">
+        🔐 Login
+      </router-link>
+      
+      <!-- CUSTOMER -->
+      <div v-else-if="!isStaff" class="customer-actions">
+        <router-link to="/book" class="cta-button">Book Service</router-link>
+        <span class="user-greeting">👋 {{ userEmail }}</span>
+        <button class="logout-button" @click="$emit('logout')">🚪 Logout</button>
+      </div>
+      
+      <!-- STAFF -->
+      <div v-else class="staff-actions">
+        <router-link to="/admin" class="admin-cta">Admin Panel</router-link>
+        <span class="user-greeting">{{ userEmail }} (Staff)</span>
+        <button class="logout-button" @click="$emit('logout')">🚪 Logout</button>
+      </div>
     </div>
 
     <!-- Mobile Hamburger -->
-    <button 
-      class="hamburger" 
-      @click="toggleMenu" 
-      :aria-expanded="isOpen"
-      aria-label="Toggle navigation menu"
-    >
+    <button class="hamburger" @click="toggleMenu" :class="{ open: isOpen }" :aria-expanded="isOpen">
       <span></span>
       <span></span>
       <span></span>
@@ -62,7 +87,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+
+const props = defineProps<{
+  user: {
+    email: string
+    role: 'customer' | 'staff'
+    loggedIn: boolean
+  } | null
+}>()
+
+const emit = defineEmits<{ logout: [] }>()
+
+// Computed properties for safe reactivity
+const isLoggedIn = computed(() => props.user !== null)
+const isStaff = computed(() => props.user?.role === 'staff')
+const userEmail = computed(() => props.user?.email || '')
 
 const isOpen = ref(false)
 let scrollHandler: (() => void) | null = null
@@ -77,7 +117,6 @@ const closeMenu = () => {
   document.body.style.overflow = ''
 }
 
-// Auto-close on route change/resize
 onMounted(() => {
   scrollHandler = () => closeMenu()
   window.addEventListener('resize', closeMenu)
@@ -426,4 +465,81 @@ html, body {
     transform: translateY(0);
   }
 }
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-greeting {
+  font-weight: 600;
+  color: rgba(0,0,0,0.9);
+  font-size: 0.9rem;
+}
+
+.logout-button {
+  background: rgba(220,53,69,0.9) !important;
+  color: white !important;
+  border: 2px solid rgba(220,53,69,0.5) !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+}
+
+.logout-button:hover {
+  background: #c82333 !important;
+}
+.customer-actions, .staff-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-link {
+  border-left: 4px solid #28a745 !important;
+  background: rgba(40, 167, 74, 0.1) !important;
+}
+
+.admin-link:hover {
+  border-left-color: #20c997 !important;
+  background: rgba(40, 167, 74, 0.2) !important;
+}
+
+.admin-cta {
+  background: linear-gradient(135deg, #28a745, #20c997) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  padding: 0.6rem 1.5rem !important;
+  border-radius: 12px !important;
+  border: 2px solid #28a745 !important;
+  box-shadow: 0 4px 12px rgba(40, 167, 74, 0.3) !important;
+  text-decoration: none !important;
+}
+
+.admin-cta:hover {
+  background: #218838 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(40, 167, 74, 0.4) !important;
+}
+
+/* Staff navbar background variation */
+.navbar.staff-nav {
+  background: linear-gradient(135deg, #28a745, #20c997, #17a2b8) !important;
+}
+
+/* Update user greeting for staff */
+.staff-actions .user-greeting {
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Mobile staff menu */
+@media (max-width: 1024px) {
+  .nav-menu.staff-menu {
+    background: linear-gradient(180deg, #28a745, #20c997) !important;
+  }
+}
+
 </style>
