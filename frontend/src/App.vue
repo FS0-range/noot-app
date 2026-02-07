@@ -71,7 +71,9 @@ const logout = () => {
     
     <!-- 👈 FIXED: RouterView ALWAYS shows, LoginView is a ROUTE -->
     <main class="main-content">
-      <RouterView />
+      <RouterView 
+        @login="handleLogin"
+        @register="handleRegister" />
     </main>
   </div>
 </template>
