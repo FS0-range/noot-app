@@ -66,6 +66,14 @@
         </div>
         <div class="appt-actions">
           <button class="btn-view" @click="openModal(appt)">View</button>
+          <button
+            v-if="isPast(appt.appointmentDate, appt.appointmentTime)"
+            class="btn-proceed"
+            @click="openProceedConfirm(appt)"
+          >
+            Proceed
+          </button>
+          <button class="btn-cancel-appt" @click="openCancelConfirm(appt)">Cancel</button>
         </div>
       </div>
     </div>
@@ -85,7 +93,7 @@
       <button class="pagination-btn" @click="nextPage" :disabled="currentPage === totalPages">Next →</button>
     </div>
 
-    <!-- Modal -->
+    <!-- View Modal -->
     <div v-if="modal.isOpen" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
         <button class="modal-close" @click="closeModal">&times;</button>
@@ -134,6 +142,65 @@
       </div>
     </div>
 
+    <!-- Proceed Confirmation Modal -->
+    <div v-if="proceedConfirm.isOpen" class="modal-overlay" @click="closeProceedConfirm">
+      <div class="modal-content confirm-modal-content" @click.stop>
+        <div class="confirm-icon confirm-icon--proceed">✓</div>
+        <h2>Confirm Proceed</h2>
+        <p class="confirm-desc">
+          Are you sure you want to mark this appointment as <strong>proceeded</strong>?
+        </p>
+        <div class="confirm-appt-info">
+          <span class="confirm-name">{{ proceedConfirm.appt.customerName }}</span>
+          <span class="confirm-meta">{{ proceedConfirm.appt.vehicleYear }} {{ proceedConfirm.appt.vehicleMake }} {{ proceedConfirm.appt.vehicleModel }} · #{{ proceedConfirm.appt.id }}</span>
+        </div>
+        <div class="modal-actions confirm-actions">
+          <button class="btn-secondary" @click="closeProceedConfirm">Go Back</button>
+          <button class="btn-confirm-proceed" @click="submitProceed">Yes, Proceed</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cancel Confirmation Modal -->
+    <div v-if="cancelConfirm.isOpen" class="modal-overlay" @click="closeCancelConfirm">
+      <div class="modal-content confirm-modal-content" @click.stop>
+        <div class="confirm-icon confirm-icon--cancel">✕</div>
+        <h2>Cancel Appointment</h2>
+        <p class="confirm-desc">
+          Select a reason for cancelling this appointment.
+        </p>
+        <div class="confirm-appt-info">
+          <span class="confirm-name">{{ cancelConfirm.appt.customerName }}</span>
+          <span class="confirm-meta">{{ cancelConfirm.appt.vehicleYear }} {{ cancelConfirm.appt.vehicleMake }} {{ cancelConfirm.appt.vehicleModel }} · #{{ cancelConfirm.appt.id }}</span>
+        </div>
+
+        <!-- Reason Radio Options -->
+        <div class="cancel-reasons">
+          <label
+            v-for="reason in cancelReasons"
+            :key="reason"
+            class="reason-option"
+            :class="{ selected: cancelConfirm.reason === reason }"
+          >
+            <input
+              type="radio"
+              name="cancelReason"
+              :value="reason"
+              v-model="cancelConfirm.reason"
+            />
+            <span class="reason-label">{{ reason }}</span>
+          </label>
+        </div>
+
+        <p v-if="cancelConfirm.showError" class="reason-error">Please select a reason to continue.</p>
+
+        <div class="modal-actions confirm-actions">
+          <button class="btn-secondary" @click="closeCancelConfirm">Go Back</button>
+          <button class="btn-confirm-cancel" @click="submitCancel">Confirm Cancel</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -154,6 +221,7 @@ export default {
       currentPage: 1,
       itemsPerPage: 5,
       specificDate: '',
+      now: new Date(),
       filters: [
         { label: 'Today',      value: 'today' },
         { label: 'This Week',  value: 'week'  },
@@ -161,6 +229,9 @@ export default {
         { label: 'All',        value: 'all'   },
       ],
       modal: { isOpen: false, appt: null },
+      proceedConfirm: { isOpen: false, appt: null },
+      cancelConfirm: { isOpen: false, appt: null, reason: '', showError: false },
+      cancelReasons: ['Customer did not show up', 'Reschedule'],
       appointments: [
         { id: 101, licensePlate: 'ABC-1234', vehicleMake: 'Toyota',  vehicleModel: 'Camry',    vehicleYear: '2022', customerName: 'James Carter',    price: 75,  status: 'appointment', appointmentDate: todayStr,           appointmentTime: '09:00 AM', duration: '45 min',  notes: 'Customer requested synthetic oil.' },
         { id: 102, licensePlate: 'XYZ-5678', vehicleMake: 'Honda',   vehicleModel: 'Civic',    vehicleYear: '2023', customerName: 'Priya Nair',      price: 60,  status: 'appointment', appointmentDate: todayStr,           appointmentTime: '02:30 PM', duration: '1 hr',    notes: null },
@@ -210,10 +281,64 @@ export default {
       return this.filteredAppointments.slice(start, start + this.itemsPerPage);
     },
   },
+  mounted() {
+    this._nowTimer = setInterval(() => { this.now = new Date(); }, 60000);
+  },
+  beforeUnmount() {
+    clearInterval(this._nowTimer);
+  },
   methods: {
     isToday(date) {
       return date === this.todayStr;
     },
+    isPast(date, time) {
+      const [timePart, modifier] = time.split(' ');
+      let [hours, minutes] = timePart.split(':').map(Number);
+      if (modifier === 'AM' && hours === 12) hours = 0;
+      if (modifier === 'PM' && hours !== 12) hours += 12;
+      const apptDate = new Date(date + 'T00:00:00');
+      apptDate.setHours(hours, minutes, 0, 0);
+      return this.now > apptDate;
+    },
+
+    // Proceed
+    openProceedConfirm(appt) {
+      this.proceedConfirm.appt = appt;
+      this.proceedConfirm.isOpen = true;
+    },
+    closeProceedConfirm() {
+      this.proceedConfirm.isOpen = false;
+      this.proceedConfirm.appt = null;
+    },
+    submitProceed() {
+      this.proceedConfirm.appt.status = 'proceeded';
+      // Add your save/emit logic here
+      console.log('Proceeded:', this.proceedConfirm.appt.id);
+      this.closeProceedConfirm();
+    },
+
+    // Cancel
+    openCancelConfirm(appt) {
+      this.cancelConfirm.appt = appt;
+      this.cancelConfirm.reason = '';
+      this.cancelConfirm.showError = false;
+      this.cancelConfirm.isOpen = true;
+    },
+    closeCancelConfirm() {
+      this.cancelConfirm.isOpen = false;
+      this.cancelConfirm.appt = null;
+    },
+    submitCancel() {
+      if (!this.cancelConfirm.reason) {
+        this.cancelConfirm.showError = true;
+        return;
+      }
+      this.cancelConfirm.appt.status = 'cancelled';
+      // Add your save/emit logic here
+      console.log('Cancelled:', this.cancelConfirm.appt.id, 'Reason:', this.cancelConfirm.reason);
+      this.closeCancelConfirm();
+    },
+
     setFilter(val) {
       this.activeFilter = val;
       this.specificDate = '';
