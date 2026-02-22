@@ -1,0 +1,655 @@
+/* ══════════════════════════════════════════
+   JOB CARDS — jobCards.css
+   Self-contained stylesheet (no dependencies)
+   ══════════════════════════════════════════ */
+
+/* ── Container ── */
+.jc-container {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.jc-header {
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+}
+.jc-header h1 {
+  font-size: 2.2rem;
+  color: #FFD700;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* ── Filter Bar ── */
+.jc-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.jc-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  flex-wrap: wrap;
+}
+
+.jc-filter-row-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #555555;
+  min-width: 44px;
+  flex-shrink: 0;
+}
+
+.jc-filter-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.jc-filter-btn {
+  padding: 0.4rem 1rem;
+  border: 1px solid #2a2a2a;
+  background: transparent;
+  color: #888888;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.jc-filter-btn:hover {
+  border-color: #FFD700;
+  color: #FFD700;
+  background: rgba(255, 215, 0, 0.06);
+}
+.jc-filter-btn.active {
+  background: #FFD700;
+  color: #111111;
+  border-color: #FFD700;
+  font-weight: 700;
+}
+
+/* ── Status Filter Button overrides (hover) ── */
+.jc-status-filter-btn:hover.jc-status-btn--diagnose          { border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.07); }
+.jc-status-filter-btn:hover.jc-status-btn--quotation         { border-color: #3b82f6; color: #3b82f6; background: rgba(59, 130, 246, 0.07); }
+.jc-status-filter-btn:hover.jc-status-btn--waiting-for-parts { border-color: #a855f7; color: #a855f7; background: rgba(168, 85, 247, 0.07); }
+.jc-status-filter-btn:hover.jc-status-btn--service           { border-color: #22c55e; color: #22c55e; background: rgba(34, 197, 94, 0.07);  }
+
+/* ── Status Filter Button overrides (active) ── */
+.jc-status-filter-btn.active.jc-status-btn--diagnose          { background: #f59e0b; color: #111111; border-color: #f59e0b; }
+.jc-status-filter-btn.active.jc-status-btn--quotation         { background: #3b82f6; color: #ffffff; border-color: #3b82f6; }
+.jc-status-filter-btn.active.jc-status-btn--waiting-for-parts { background: #a855f7; color: #ffffff; border-color: #a855f7; }
+.jc-status-filter-btn.active.jc-status-btn--service           { background: #22c55e; color: #111111; border-color: #22c55e; }
+
+/* ── Date Filter ── */
+.jc-date-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.jc-date-input {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #2a2a2a;
+  background: #1c1c1c;
+  color: #888888;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+.jc-date-input:hover {
+  border-color: #FFD700;
+  color: #e0e0e0;
+}
+.jc-date-input:focus {
+  border-color: #FFD700;
+  color: #e0e0e0;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+.jc-date-input.active {
+  border-color: #FFD700;
+  background: rgba(255, 215, 0, 0.1);
+  color: #FFD700;
+}
+.jc-date-input::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}
+.jc-date-input.active::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) sepia(1) saturate(5) hue-rotate(0deg);
+}
+
+.jc-clear-date {
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #FFD700;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  padding: 0;
+  flex-shrink: 0;
+}
+.jc-clear-date:hover {
+  background: rgba(255, 215, 0, 0.25);
+}
+
+/* ── Count Row ── */
+.jc-count-row {
+  padding: 0.5rem 1rem;
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+}
+.jc-count {
+  color: #e0e0e0;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+/* ── Empty State ── */
+.jc-empty-state {
+  background: #1c1c1c;
+  border: 1px dashed #2e2e2e;
+  border-radius: 10px;
+  padding: 2rem;
+  color: #555555;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* ── List ── */
+.jc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── Card ── */
+.jc-card {
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.jc-card:hover {
+  transform: translateX(4px);
+  border-color: #3a3a3a;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+.jc-card--today {
+  border-color: rgba(255, 215, 0, 0.2);
+}
+
+/* ── Card hover accent by status ── */
+.jc-card:has(.jc-status-col--diagnose):hover          { border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 4px 20px rgba(245, 158, 11, 0.08); }
+.jc-card:has(.jc-status-col--quotation):hover         { border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08); }
+.jc-card:has(.jc-status-col--waiting-for-parts):hover { border-color: rgba(168, 85, 247, 0.4); box-shadow: 0 4px 20px rgba(168, 85, 247, 0.08); }
+.jc-card:has(.jc-status-col--service):hover           { border-color: rgba(34, 197, 94, 0.4);  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.08);  }
+
+/* ── Status Column ── */
+.jc-status-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: #141414;
+  min-width: 110px;
+  gap: 0.4rem;
+}
+
+/* Status column left-border accent */
+.jc-status-col--diagnose          { border-left: 3px solid #f59e0b; }
+.jc-status-col--quotation         { border-left: 3px solid #3b82f6; }
+.jc-status-col--waiting-for-parts { border-left: 3px solid #a855f7; }
+.jc-status-col--service           { border-left: 3px solid #22c55e; }
+
+.jc-card-day {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #888888;
+}
+
+/* ── Status Badge ── */
+.jc-status-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  line-height: 1.4;
+  text-align: center;
+}
+.jc-status-badge--diagnose {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.jc-status-badge--quotation {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+.jc-status-badge--waiting-for-parts {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+.jc-status-badge--service {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+/* ── Divider ── */
+.jc-divider {
+  width: 2px;
+  align-self: stretch;
+  background: #2e2e2e;
+}
+.jc-divider--diagnose          { background: rgba(245, 158, 11, 0.35); }
+.jc-divider--quotation         { background: rgba(59, 130, 246, 0.35); }
+.jc-divider--waiting-for-parts { background: rgba(168, 85, 247, 0.35); }
+.jc-divider--service           { background: rgba(34, 197, 94, 0.35);  }
+
+/* ── Card Body ── */
+.jc-card-body {
+  flex: 1;
+  padding: 1rem 1.25rem;
+}
+.jc-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.3rem;
+}
+.jc-card-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin: 0;
+}
+.jc-card-id {
+  font-size: 0.78rem;
+  color: #444444;
+}
+.jc-card-vehicle {
+  font-size: 0.85rem;
+  color: #888888;
+  margin: 0 0 0.6rem;
+}
+.jc-card-meta {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.jc-meta-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+}
+.jc-meta-tag--date {
+  background: rgba(156, 163, 175, 0.1);
+  color: #9ca3af;
+}
+.jc-meta-tag--service {
+  background: rgba(255, 215, 0, 0.08);
+  color: #888888;
+}
+
+/* ── Card Actions ── */
+.jc-card-actions {
+  padding: 0 1.25rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.jc-btn-view {
+  padding: 0.5rem 1.1rem;
+  background: #FFD700;
+  color: #111111;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.jc-btn-view:hover {
+  background: #e6c200;
+  transform: scale(1.05);
+}
+
+/* ── Pagination ── */
+.jc-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+}
+.jc-pagination-btn {
+  padding: 0.55rem 1.2rem;
+  border: 1px solid #FFD700;
+  background: transparent;
+  color: #FFD700;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.jc-pagination-btn:hover:not(:disabled) {
+  background: #FFD700;
+  color: #111111;
+  transform: scale(1.05);
+}
+.jc-pagination-btn:disabled {
+  border-color: #333333;
+  color: #444444;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.jc-pagination-pages {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.jc-pagination-page {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #2a2a2a;
+  background: #141414;
+  color: #888888;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-width: 36px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+.jc-pagination-page:hover {
+  border-color: #FFD700;
+  color: #FFD700;
+  background: rgba(255, 215, 0, 0.08);
+}
+.jc-pagination-page.active {
+  background: #FFD700;
+  color: #111111;
+  border-color: #FFD700;
+  font-weight: 700;
+}
+
+/* ── Modal Overlay ── */
+.jc-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+/* ── Modal ── */
+.jc-modal {
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 2rem;
+}
+.jc-modal h2 {
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin: 0 0 1.5rem;
+  font-weight: 600;
+}
+.jc-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666666;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.jc-modal-close:hover { color: #FFD700; }
+
+.jc-modal-body { margin-bottom: 1.5rem; }
+
+.jc-detail-group { margin-bottom: 1.1rem; }
+.jc-detail-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #666666;
+  margin-bottom: 0.3rem;
+}
+.jc-detail-group p {
+  color: #e0e0e0;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.jc-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+.jc-btn-secondary {
+  padding: 0.6rem 1.4rem;
+  background: transparent;
+  border: 1px solid #3a3a3a;
+  color: #aaaaaa;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+.jc-btn-secondary:hover {
+  border-color: #666666;
+  color: #ffffff;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .jc-container        { padding: 1rem; }
+  .jc-header h1        { font-size: 1.7rem; }
+  .jc-status-col       { min-width: 80px; padding: 1rem 0.75rem; }
+  .jc-card-body        { padding: 0.85rem 1rem; }
+  .jc-card-actions     { padding: 0 0.75rem; }
+  .jc-card-name        { font-size: 0.95rem; }
+  .jc-count            { margin-left: 0; width: 100%; }
+  .jc-pagination       { flex-wrap: wrap; gap: 0.75rem; padding: 1rem; }
+  .jc-pagination-btn   { padding: 0.5rem 1rem; font-size: 0.8rem; }
+}
+
+/* ── Assign / Change Buttons ── */
+.jc-btn-assign {
+  padding: 0.5rem 1.1rem;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.jc-btn-assign:hover {
+  background: #2563eb;
+  transform: scale(1.05);
+}
+
+.jc-btn-change {
+  padding: 0.5rem 1.1rem;
+  background: #f59e0b;
+  color: #111111;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.jc-btn-change:hover {
+  background: #d97706;
+  transform: scale(1.05);
+}
+
+/* ── Technician Modal ── */
+.jc-tech-modal {
+  max-width: 420px;
+}
+
+.jc-tech-modal-subtitle {
+  font-size: 0.85rem;
+  color: #888888;
+  margin: -0.75rem 0 1.5rem;
+}
+
+.jc-current-tech {
+  color: #e0e0e0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.jc-tech-select {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  background: #141414;
+  border: 1px solid #2e2e2e;
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 0.88rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.2rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.jc-tech-select:hover,
+.jc-tech-select:focus {
+  border-color: #FFD700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
+}
+.jc-tech-select option:disabled {
+  color: #444444;
+}
+
+.jc-tech-error {
+  font-size: 0.78rem;
+  color: #ef4444;
+  margin: 0.4rem 0 0;
+}
+
+.jc-btn-confirm-tech {
+  padding: 0.6rem 1.4rem;
+  background: #FFD700;
+  color: #111111;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.jc-btn-confirm-tech:hover {
+  background: #e6c200;
+  transform: scale(1.03);
+}
+
+/* ── Technician Assignment Filter Buttons ── */
+.jc-tech-filter-btn--unassigned:hover         { border-color: #ef4444; color: #ef4444; background: rgba(239, 68, 68, 0.07); }
+.jc-tech-filter-btn--unassigned.active        { background: #ef4444; color: #ffffff; border-color: #ef4444; }
+
+.jc-tech-filter-btn--assigned:hover           { border-color: #22c55e; color: #22c55e; background: rgba(34, 197, 94, 0.07); }
+.jc-tech-filter-btn--assigned.active          { background: #22c55e; color: #111111; border-color: #22c55e; }
+
+/* ── Technician name tag on card ── */
+.jc-meta-tag--technician {
+  background: rgba(99, 102, 241, 0.12);
+  color: #a5b4fc;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+/* ── Not Assigned tag on card ── */
+.jc-meta-tag--unassigned {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}

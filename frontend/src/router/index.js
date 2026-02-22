@@ -28,7 +28,8 @@ const routes = [
   { path: '/book', name: 'book', component: () => import('../views/BookingView.vue') },
   { path: '/myBookings', name: 'customerBookings', component: () => import('../views/customerBookings.vue') },
   { path: '/profile', name: 'profile', component: () => import('../views/Profile.vue') },
-  { path: '/staffAppointments', name: 'staffAppointments', component: () => import('../views/StaffAppointments.vue') }
+  { path: '/staffAppointments', name: 'staffAppointments', component: () => import('../views/StaffAppointments.vue') },
+  { path: '/jobCards', name: 'jobCards', component: () => import('../views/JobCards.vue') }
 ]
 
 const router = createRouter({
