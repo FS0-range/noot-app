@@ -5,10 +5,11 @@ const emit = defineEmits(['login', 'register'])
 
 // 🎯 DUMMY TEST ACCOUNTS - HARDCODED
 const testAccounts = [
-  { email: 'customer@test.com', password: '123456', role: 'customer' },
-  { email: 'staff@test.com', password: '123456', role: 'staff' },
-  { email: 'admin@test.com', password: 'admin123', role: 'staff' },
-  { email: 'john@example.com', password: 'password', role: 'customer' }
+  { email: 'customer@test.com',  password: '123456', role: 'customer' },
+  { email: 'manager@test.com',   password: '123456', role: 'manager' },
+  { email: 'tech@test.com',      password: '123456', role: 'technician' },
+  { email: 'admin@test.com',     password: 'admin123', role: 'manager' },
+  { email: 'john@example.com',   password: 'password', role: 'customer' }
 ]
 
 const currentMode = ref('login')
@@ -100,7 +101,7 @@ const handleSubmit = () => {
         <div v-for="account in testAccounts" :key="account.email" class="account-item">
           <strong>{{ account.email }}</strong> 
           ({{ account.password }}) 
-          <span class="role-badge role-{{ account.role }}">{{ account.role }}</span>
+          <span class="role-badge" :class="'role-' + account.role">{{ account.role }}</span>
         </div>
       </div>
     </div>
@@ -126,22 +127,27 @@ const handleSubmit = () => {
       <div v-if="currentMode === 'login'" class="role-group">
         <label>Login as:</label>
         <div class="role-buttons">
-          <button 
+          <button
             type="button"
             :class="{ active: loginForm.role === 'customer' }"
-            @click="loginForm.role = 'customer'"
-          >
+            @click="loginForm.role = 'customer'">
             Customer
           </button>
-          <button 
+          <button
             type="button"
-            :class="{ active: loginForm.role === 'staff' }"
-            @click="loginForm.role = 'staff'"
-          >
-            Staff
+            :class="{ active: loginForm.role === 'manager' }"
+            @click="loginForm.role = 'manager'">
+            Manager
+          </button>
+          <button
+            type="button"
+            :class="{ active: loginForm.role === 'technician' }"
+            @click="loginForm.role = 'technician'">
+            Technician
           </button>
         </div>
       </div>
+
 
       <div v-if="currentMode === 'register'" class="form-group">
         <label>Name</label>
@@ -365,7 +371,16 @@ const handleSubmit = () => {
   font-weight: 500;
 }
 
-.role-staff {
+.role-manager {
+  background: #fff3cd;
+  color: #856404;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.role-technician {
   background: #d4edda;
   color: #155724;
   padding: 0.2rem 0.5rem;
@@ -373,4 +388,5 @@ const handleSubmit = () => {
   font-size: 0.8rem;
   font-weight: 500;
 }
+
 </style>
