@@ -1053,3 +1053,133 @@
   background: #dc2626;
   transform: scale(1.03);
 }
+
+/* ── Diagnose Tech Tags ── */
+.tech-assigned-tag {
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.tech-unassigned-tag {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+/* ── Assign / Change Tech Buttons ── */
+.btn-assign-tech {
+  padding: 0.5rem 1.1rem;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.btn-assign-tech:hover {
+  background: #2563eb;
+  transform: scale(1.05);
+}
+
+.btn-change-tech {
+  padding: 0.5rem 1.1rem;
+  background: #f59e0b;
+  color: #111111;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.btn-change-tech:hover {
+  background: #d97706;
+  transform: scale(1.05);
+}
+
+/* ── Assign Tech Modal ── */
+.confirm-icon--tech {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.tech-select-wrapper {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.tech-select-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #666666;
+  margin-bottom: 0.5rem;
+}
+
+.custom-select-container {
+  position: relative;
+}
+
+.custom-select-container::after {
+  content: '▾';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888888;
+  pointer-events: none;
+  font-size: 0.85rem;
+}
+
+.tech-select {
+  width: 100%;
+  padding: 0.7rem 2.5rem 0.7rem 1rem;
+  background: #141414;
+  border: 1px solid #2e2e2e;
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.tech-select:hover {
+  border-color: #3b82f6;
+}
+.tech-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+.tech-select option {
+  background: #1c1c1c;
+  color: #e0e0e0;
+}
+
+/* ── Confirm Assign Button ── */
+.btn-confirm-assign {
+  padding: 0.6rem 1.4rem;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.btn-confirm-assign:hover {
+  background: #2563eb;
+  transform: scale(1.03);
+}

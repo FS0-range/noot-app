@@ -62,10 +62,32 @@
           <div class="appt-meta">
             <span class="meta-tag date-tag">{{ formatDate(appt.appointmentDate) }}</span>
             <span class="meta-tag duration-tag">{{ appt.duration }}</span>
+            <!-- Diagnose Tech Tag -->
+            <span v-if="appt.diagnoseTech" class="meta-tag tech-assigned-tag">
+              👤 {{ appt.diagnoseTech }}
+            </span>
+            <span v-else class="meta-tag tech-unassigned-tag">
+              Diagnose Tech: Not Assigned
+            </span>
           </div>
         </div>
         <div class="appt-actions">
           <button class="btn-view" @click="openModal(appt)">View</button>
+          <!-- Assign / Change Tech Button -->
+          <button
+            v-if="!appt.diagnoseTech"
+            class="btn-assign-tech"
+            @click="openAssignTech(appt)"
+          >
+            Assign
+          </button>
+          <button
+            v-else
+            class="btn-change-tech"
+            @click="openAssignTech(appt)"
+          >
+            Change
+          </button>
           <button
             v-if="isPast(appt.appointmentDate, appt.appointmentTime)"
             class="btn-proceed"
@@ -131,6 +153,10 @@
             <label>Status</label>
             <p>{{ formatStatus(modal.appt.status) }}</p>
           </div>
+          <div class="detail-group">
+            <label>Diagnose Technician</label>
+            <p>{{ modal.appt.diagnoseTech || 'Not Assigned' }}</p>
+          </div>
           <div v-if="modal.appt.notes" class="detail-group">
             <label>Notes</label>
             <p>{{ modal.appt.notes }}</p>
@@ -138,6 +164,54 @@
         </div>
         <div class="modal-actions">
           <button class="btn-secondary" @click="closeModal">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assign Tech Modal -->
+    <div v-if="assignTech.isOpen" class="modal-overlay" @click="closeAssignTech">
+      <div class="modal-content confirm-modal-content" @click.stop>
+        <button class="modal-close" @click="closeAssignTech">&times;</button>
+        <div class="confirm-icon confirm-icon--tech">🔧</div>
+        <h2>{{ assignTech.appt && assignTech.appt.diagnoseTech ? 'Change Technician' : 'Assign Technician' }}</h2>
+        <p class="confirm-desc">
+          Select a diagnose technician for this appointment.
+        </p>
+        <div class="confirm-appt-info">
+          <span class="confirm-name">{{ assignTech.appt && assignTech.appt.customerName }}</span>
+          <span class="confirm-meta">
+            {{ assignTech.appt && assignTech.appt.vehicleYear }}
+            {{ assignTech.appt && assignTech.appt.vehicleMake }}
+            {{ assignTech.appt && assignTech.appt.vehicleModel }}
+            · #{{ assignTech.appt && assignTech.appt.id }}
+          </span>
+        </div>
+
+        <!-- Technician Dropdown -->
+        <div class="tech-select-wrapper">
+          <label class="tech-select-label">Diagnose Technician</label>
+          <div class="custom-select-container">
+            <select
+              v-model="assignTech.selectedTech"
+              class="tech-select"
+            >
+              <option value="" disabled>— Select a technician —</option>
+              <option
+                v-for="tech in technicians"
+                :key="tech"
+                :value="tech"
+              >{{ tech }}</option>
+            </select>
+          </div>
+        </div>
+
+        <p v-if="assignTech.showError" class="reason-error">Please select a technician to continue.</p>
+
+        <div class="modal-actions confirm-actions">
+          <button class="btn-secondary" @click="closeAssignTech">Go Back</button>
+          <button class="btn-confirm-assign" @click="submitAssignTech">
+            {{ assignTech.appt && assignTech.appt.diagnoseTech ? 'Confirm Change' : 'Confirm Assign' }}
+          </button>
         </div>
       </div>
     </div>
@@ -228,18 +302,27 @@ export default {
         { label: 'This Month', value: 'month' },
         { label: 'All',        value: 'all'   },
       ],
+      // Available technicians list
+      technicians: [
+        'Ryan Patel',
+        'Chris Lee',
+        'Marco Reyes',
+        'Aisha Johnson',
+        'Tom Nguyen',
+      ],
       modal: { isOpen: false, appt: null },
+      assignTech: { isOpen: false, appt: null, selectedTech: '', showError: false },
       proceedConfirm: { isOpen: false, appt: null },
       cancelConfirm: { isOpen: false, appt: null, reason: '', showError: false },
       cancelReasons: ['Customer did not show up', 'Reschedule'],
       appointments: [
-        { id: 101, licensePlate: 'ABC-1234', vehicleMake: 'Toyota',  vehicleModel: 'Camry',    vehicleYear: '2022', customerName: 'James Carter',    price: 75,  status: 'appointment', appointmentDate: todayStr,           appointmentTime: '09:00 AM', duration: '45 min',  notes: 'Customer requested synthetic oil.' },
-        { id: 102, licensePlate: 'XYZ-5678', vehicleMake: 'Honda',   vehicleModel: 'Civic',    vehicleYear: '2023', customerName: 'Priya Nair',      price: 60,  status: 'appointment', appointmentDate: todayStr,           appointmentTime: '02:30 PM', duration: '1 hr',    notes: null },
-        { id: 103, licensePlate: 'DEF-9012', vehicleMake: 'Ford',    vehicleModel: 'F-150',    vehicleYear: '2021', customerName: 'Marco Silva',     price: 50,  status: 'appointment', appointmentDate: addDays(today, 2),  appointmentTime: '10:00 AM', duration: '30 min',  notes: null },
-        { id: 104, licensePlate: 'GHI-3456', vehicleMake: 'BMW',     vehicleModel: '3 Series', vehicleYear: '2024', customerName: 'Sarah Mitchell',  price: 200, status: 'appointment', appointmentDate: addDays(today, 4),  appointmentTime: '03:30 PM', duration: '2 hrs',   notes: 'Front and rear brake pads.' },
-        { id: 105, licensePlate: 'JKL-7890', vehicleMake: 'Tesla',   vehicleModel: 'Model 3',  vehicleYear: '2023', customerName: 'David Okafor',    price: 50,  status: 'appointment', appointmentDate: addDays(today, 5),  appointmentTime: '11:00 AM', duration: '1 hr',    notes: null },
-        { id: 106, licensePlate: 'MNO-1122', vehicleMake: 'Audi',    vehicleModel: 'A4',       vehicleYear: '2022', customerName: 'Lena Hoffmann',   price: 350, status: 'appointment', appointmentDate: addDays(today, 10), appointmentTime: '08:30 AM', duration: '3 hrs',   notes: 'Annual full service and inspection.' },
-        { id: 107, licensePlate: 'PQR-3344', vehicleMake: 'Mazda',   vehicleModel: 'CX-5',     vehicleYear: '2020', customerName: 'Tom Nguyen',      price: 120, status: 'appointment', appointmentDate: addDays(today, 14), appointmentTime: '01:00 PM', duration: '1.5 hrs', notes: null },
+        { id: 101, licensePlate: 'ABC-1234', vehicleMake: 'Toyota',  vehicleModel: 'Camry',    vehicleYear: '2022', customerName: 'James Carter',    price: 75,  status: 'appointment', appointmentDate: todayStr,           appointmentTime: '09:00 AM', duration: '45 min',  diagnoseTech: '',          notes: 'Customer requested synthetic oil.' },
+        { id: 102, licensePlate: 'XYZ-5678', vehicleMake: 'Honda',   vehicleModel: 'Civic',    vehicleYear: '2023', customerName: 'Priya Nair',      price: 60,  status: 'appointment', appointmentDate: todayStr,           appointmentTime: '02:30 PM', duration: '1 hr',    diagnoseTech: 'Ryan Patel', notes: null },
+        { id: 103, licensePlate: 'DEF-9012', vehicleMake: 'Ford',    vehicleModel: 'F-150',    vehicleYear: '2021', customerName: 'Marco Silva',     price: 50,  status: 'appointment', appointmentDate: addDays(today, 2),  appointmentTime: '10:00 AM', duration: '30 min',  diagnoseTech: '',          notes: null },
+        { id: 104, licensePlate: 'GHI-3456', vehicleMake: 'BMW',     vehicleModel: '3 Series', vehicleYear: '2024', customerName: 'Sarah Mitchell',  price: 200, status: 'appointment', appointmentDate: addDays(today, 4),  appointmentTime: '03:30 PM', duration: '2 hrs',   diagnoseTech: 'Chris Lee', notes: 'Front and rear brake pads.' },
+        { id: 105, licensePlate: 'JKL-7890', vehicleMake: 'Tesla',   vehicleModel: 'Model 3',  vehicleYear: '2023', customerName: 'David Okafor',    price: 50,  status: 'appointment', appointmentDate: addDays(today, 5),  appointmentTime: '11:00 AM', duration: '1 hr',    diagnoseTech: '',          notes: null },
+        { id: 106, licensePlate: 'MNO-1122', vehicleMake: 'Audi',    vehicleModel: 'A4',       vehicleYear: '2022', customerName: 'Lena Hoffmann',   price: 350, status: 'appointment', appointmentDate: addDays(today, 10), appointmentTime: '08:30 AM', duration: '3 hrs',   diagnoseTech: '',          notes: 'Annual full service and inspection.' },
+        { id: 107, licensePlate: 'PQR-3344', vehicleMake: 'Mazda',   vehicleModel: 'CX-5',     vehicleYear: '2020', customerName: 'Tom Nguyen',      price: 120, status: 'appointment', appointmentDate: addDays(today, 14), appointmentTime: '01:00 PM', duration: '1.5 hrs', diagnoseTech: '',          notes: null },
       ],
     };
   },
@@ -301,6 +384,29 @@ export default {
       return this.now > apptDate;
     },
 
+    // Assign Tech
+    openAssignTech(appt) {
+      this.assignTech.appt = appt;
+      this.assignTech.selectedTech = appt.diagnoseTech || '';
+      this.assignTech.showError = false;
+      this.assignTech.isOpen = true;
+    },
+    closeAssignTech() {
+      this.assignTech.isOpen = false;
+      this.assignTech.appt = null;
+      this.assignTech.selectedTech = '';
+      this.assignTech.showError = false;
+    },
+    submitAssignTech() {
+      if (!this.assignTech.selectedTech) {
+        this.assignTech.showError = true;
+        return;
+      }
+      this.assignTech.appt.diagnoseTech = this.assignTech.selectedTech;
+      console.log('Tech assigned:', this.assignTech.appt.id, '->', this.assignTech.selectedTech);
+      this.closeAssignTech();
+    },
+
     // Proceed
     openProceedConfirm(appt) {
       this.proceedConfirm.appt = appt;
@@ -312,7 +418,6 @@ export default {
     },
     submitProceed() {
       this.proceedConfirm.appt.status = 'proceeded';
-      // Add your save/emit logic here
       console.log('Proceeded:', this.proceedConfirm.appt.id);
       this.closeProceedConfirm();
     },
@@ -334,7 +439,6 @@ export default {
         return;
       }
       this.cancelConfirm.appt.status = 'cancelled';
-      // Add your save/emit logic here
       console.log('Cancelled:', this.cancelConfirm.appt.id, 'Reason:', this.cancelConfirm.reason);
       this.closeCancelConfirm();
     },
@@ -391,4 +495,4 @@ export default {
 };
 </script>
 
-<style scoped src="@/assets/staffAppointments.css"></style>
+<style scoped src="@/assets/managerAppointments.css"></style>
