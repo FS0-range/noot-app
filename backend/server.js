@@ -98,27 +98,29 @@ app.post('/api/auth/register', async (req, res) => {
     }
 
     // Insert user profile (default customer)
-    const { data: userProfile, error: profileError } = await supabase
-      .from('users')
+     const { data: userProfile, error: profileError } = await supabase
+      .from('Profiles')
       .insert({
-        name,
-        email,
-        role: 'customer'
+        ID: authData.user.id,  // 👈 links to auth.users
+        Name: name,            // 👈 lowercase from req.body, capitalized for column
+        Email: email,
+        Role: 'customer'
       })
       .select()
       .single()
 
     if (profileError) {
+      console.error('Profile insert error:', profileError) // 👈 check your terminal for the real error
       return res.status(500).json({ message: profileError.message })
     }
 
     res.json({
       user: {
-        id: userProfile.id,
-        email: userProfile.email,
-        role: userProfile.role
+        id: userProfile.ID,
+        email: userProfile.Email,  // 👈 match your column casing
+        role: userProfile.Role
       },
-      token: authData.session?.access_token  // Auto-login token
+      token: authData.session?.access_token
     })
   } catch (err) {
     res.status(500).json({ error: err.message })
