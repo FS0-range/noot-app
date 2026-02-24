@@ -36,10 +36,10 @@ const routes = [
     component: () => import('../views/ManagerDashboard.vue'), // CREATE THIS
   },
   {
-    path: '/manager-customers',
-    name: 'managerCustomers',
+    path: '/managerAppointments',
+    name: 'managerAppointments',
     meta: { requiresAuth: true, roles: ['manager'] },
-    component: () => import('../views/ManagerCustomers.vue'), // CREATE THIS
+    component: () => import('../views/ManagerAppointments.vue'), // CREATE THIS
   },
   {
     path: '/manager-reports',
@@ -56,18 +56,12 @@ const routes = [
     component: () => import('../views/TechnicianDashboard.vue'), // CREATE THIS
   },
   {
-    path: '/technician-jobs',
+    path: '/technicianJobs',
     name: 'technicianJobs',
     meta: { requiresAuth: true, roles: ['technician'] },
     component: () => import('../views/TechnicianJobs.vue'), // CREATE THIS
   },
   // 🔹 SHARED STAFF ROUTES (manager + technician)
-  {
-    path: '/staffAppointments',
-    name: 'staffAppointments',
-    meta: { requiresAuth: true, roles: ['manager', 'technician'] },
-    component: () => import('../views/StaffAppointments.vue'),
-  },
   {
     path: '/jobCards',
     name: 'jobCards',
