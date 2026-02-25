@@ -1,31 +1,31 @@
 <script setup lang="ts">
 import { reactive, ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 const emit = defineEmits(['login', 'register'])
+const router = useRouter()
 
-// 🎯 DUMMY TEST ACCOUNTS - HARDCODED
-const testAccounts = [
-  { email: 'customer@test.com', password: '123456', role: 'customer' },
-  { email: 'staff@test.com', password: '123456', role: 'staff' },
-  { email: 'admin@test.com', password: 'admin123', role: 'staff' },
-  { email: 'john@example.com', password: 'password', role: 'customer' }
-]
-
-const currentMode = ref('login')
-const loginForm = reactive({ role: 'customer', email: '', password: '' })
-const registerForm = reactive({ name: '', email: '', password: '', confirmPassword: '' })
+const currentMode = ref<'login' | 'register'>('login')
+const loginForm = reactive({ email: '', password: '' })
+const registerForm = reactive({ name: '', role: '', email: '', password: '', confirmPassword: '' })
 const error = ref('')
 const loading = ref(false)
 
 // Computed for v-model
 const currentEmail = computed({
   get: () => currentMode.value === 'login' ? loginForm.email : registerForm.email,
-  set: (value) => currentMode.value === 'login' ? loginForm.email = value : registerForm.email = value
+  set: (value: string) => {
+    if (currentMode.value === 'login') loginForm.email = value
+    else registerForm.email = value
+  }
 })
 
 const currentPassword = computed({
   get: () => currentMode.value === 'login' ? loginForm.password : registerForm.password,
-  set: (value) => currentMode.value === 'login' ? loginForm.password = value : registerForm.password = value
+  set: (value: string) => {
+    if (currentMode.value === 'login') loginForm.password = value
+    else registerForm.password = value
+  }
 })
 
 const switchToLogin = () => {
@@ -38,35 +38,54 @@ const switchToRegister = () => {
   error.value = ''
 }
 
-// ✅ LOGIN FUNCTION - Tests against dummy accounts
-const handleLogin = () => {
-  // Check against hardcoded test accounts
-  const validAccount = testAccounts.find(account => 
-    account.email === loginForm.email && 
-    account.password === loginForm.password && 
-    account.role === loginForm.role
-  )
-
-  if (!validAccount) {
-    error.value = '❌ Invalid email, password, or role combination'
-    return
+const handleSubmit = () => {
+  if (currentMode.value === 'login') {
+    handleLogin()
+  } else {
+    handleRegister()
   }
-
-  loading.value = true
-  console.log('✅ Login successful:', validAccount)
-  
-  // Send valid user to App.vue
-  emit('login', { 
-    email: validAccount.email, 
-    role: validAccount.role, 
-    loggedIn: true 
-  })
-  
-  setTimeout(() => loading.value = false, 1000)
 }
 
-// ✅ REGISTER FUNCTION - Still emits to parent (no validation against dummy accounts)
-const handleRegister = () => {
+// ✅ LOGIN - calls backend
+const handleLogin = async () => {
+  error.value = ''
+  loading.value = true
+
+  try {
+    const res = await fetch('http://localhost:3000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: loginForm.email,
+        password: loginForm.password
+      })
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Login failed')
+    }
+
+    // ✅ Save token + emit user
+    localStorage.setItem('token', data.token)
+    emit('login', {
+      email: data.user.email,
+      role: data.user.role, // customer | manager | technician
+      loggedIn: true
+    })
+
+    console.log('✅ Backend login successful:', data.user)
+    router.push('/')
+  } catch (e: any) {
+    error.value = e.message || 'Login failed'
+  } finally {
+    loading.value = false
+  }
+}
+
+// ✅ REGISTER - calls backend
+const handleRegister = async () => {
   if (registerForm.password !== registerForm.confirmPassword) {
     error.value = '❌ Passwords do not match'
     return
@@ -75,46 +94,59 @@ const handleRegister = () => {
     error.value = '❌ Password must be at least 6 characters'
     return
   }
-  
-  loading.value = true
-  console.log('📝 Registration attempt:', registerForm.email)
-  emit('register', registerForm)
-  setTimeout(() => loading.value = false, 1000)
-}
 
-const handleSubmit = () => {
-  if (currentMode.value === 'login') {
-    handleLogin()
-  } else {
-    handleRegister()
+  loading.value = true
+  error.value = ''
+
+  try {
+    const res = await fetch('http://localhost:3000/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: registerForm.name,
+        email: registerForm.email,
+        password: registerForm.password,
+        role: registerForm.role,
+      })
+    })
+    
+    const data = await res.json()
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Registration failed')
+    }
+
+    // Auto-login after register
+    localStorage.setItem('token', data.token)
+    emit('login', {
+      email: data.user.email,
+      role: data.user.role,
+      loggedIn: true
+    })
+
+    console.log('✅ Backend registration successful:', data.user)
+    router.push('/')
+  } catch (e: any) {
+    error.value = e.message || 'Registration failed'
+  } finally {
+    loading.value = false
   }
 }
+
 </script>
 
 <template>
   <div class="login-container">
-    <!-- 🧪 TEST ACCOUNTS DISPLAY -->
-    <div class="test-accounts" v-if="!loading">
-      <h3 style="margin-top: 0;">🧪 Test Accounts:</h3>
-      <div class="account-list">
-        <div v-for="account in testAccounts" :key="account.email" class="account-item">
-          <strong>{{ account.email }}</strong> 
-          ({{ account.password }}) 
-          <span class="role-badge role-{{ account.role }}">{{ account.role }}</span>
-        </div>
-      </div>
-    </div>
-
     <form @submit.prevent="handleSubmit" class="login-form">
       <div class="mode-toggle">
-        <button 
+        <button
           type="button"
           :class="{ active: currentMode === 'login' }"
           @click="switchToLogin"
         >
           Login
         </button>
-        <button 
+        <button
           type="button"
           :class="{ active: currentMode === 'register' }"
           @click="switchToRegister"
@@ -123,67 +155,61 @@ const handleSubmit = () => {
         </button>
       </div>
 
-      <div v-if="currentMode === 'login'" class="role-group">
-        <label>Login as:</label>
-        <div class="role-buttons">
-          <button 
-            type="button"
-            :class="{ active: loginForm.role === 'customer' }"
-            @click="loginForm.role = 'customer'"
-          >
-            Customer
-          </button>
-          <button 
-            type="button"
-            :class="{ active: loginForm.role === 'staff' }"
-            @click="loginForm.role = 'staff'"
-          >
-            Staff
-          </button>
-        </div>
-      </div>
-
+      <!-- Name (register only) -->
       <div v-if="currentMode === 'register'" class="form-group">
         <label>Name</label>
-        <input 
+        <input
           v-model="registerForm.name"
-          type="text" 
-          maxlength = "20"
-          placeholder="Enter name"
-          required 
+          type="text"
+          maxlength="50"
+          placeholder="Enter your name"
+          required
           :disabled="loading"
         />
       </div>
 
+      <!-- Role dropdown (register only) -->
+      <div v-if="currentMode === 'register'" class="form-group">
+        <label>Role</label>
+        <select v-model="registerForm.role" :disabled="loading" class="form-control">
+          <option value="customer">Customer</option>
+          <option value="manager">Manager</option>
+          <option value="technician">Technician</option>
+        </select>
+      </div>
+
+      <!-- Email -->
       <div class="form-group">
         <label>Email</label>
-        <input 
-          v-model="currentEmail" 
-          type="email" 
+        <input
+          v-model="currentEmail"
+          type="email"
           placeholder="Enter email"
-          required 
+          required
           :disabled="loading"
         />
       </div>
 
+      <!-- Password -->
       <div class="form-group">
         <label>Password</label>
-        <input 
-          v-model="currentPassword" 
-          type="password" 
+        <input
+          v-model="currentPassword"
+          type="password"
           placeholder="Enter password"
-          required 
+          required
           :disabled="loading"
         />
       </div>
 
+      <!-- Confirm Password (register only) -->
       <div v-if="currentMode === 'register'" class="form-group">
         <label>Confirm Password</label>
-        <input 
+        <input
           v-model="registerForm.confirmPassword"
-          type="password" 
+          type="password"
           placeholder="Confirm password"
-          required 
+          required
           :disabled="loading"
         />
       </div>
@@ -365,7 +391,16 @@ const handleSubmit = () => {
   font-weight: 500;
 }
 
-.role-staff {
+.role-manager {
+  background: #fff3cd;
+  color: #856404;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.role-technician {
   background: #d4edda;
   color: #155724;
   padding: 0.2rem 0.5rem;
@@ -373,4 +408,5 @@ const handleSubmit = () => {
   font-size: 0.8rem;
   font-weight: 500;
 }
+
 </style>
