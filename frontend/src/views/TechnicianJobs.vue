@@ -55,29 +55,7 @@
         </div>
       </div>
 
-      <!-- Row 2: Role filters -->
-      <div class="tech-filter-row">
-        <div class="tech-filter-row-label">Role</div>
-        <div class="tech-filter-row-controls">
-          <button
-            class="tech-filter-btn"
-            :class="{ active: activeRoleFilter === 'all' }"
-            @click="setRoleFilter('all')"
-          >All</button>
-          <button
-            class="tech-filter-btn tech-role-btn--diagnose"
-            :class="{ active: activeRoleFilter === 'diagnose' }"
-            @click="setRoleFilter('diagnose')"
-          >Diagnose</button>
-          <button
-            class="tech-filter-btn tech-role-btn--service"
-            :class="{ active: activeRoleFilter === 'service' }"
-            @click="setRoleFilter('service')"
-          >Service</button>
-        </div>
-      </div>
-
-      <!-- Row 3: Status filters -->
+      <!-- Row 2: Status filters -->
       <div class="tech-filter-row">
         <div class="tech-filter-row-label">Status</div>
         <div class="tech-filter-row-controls">
@@ -93,6 +71,28 @@
             :class="['tech-status-btn--' + s.value, { active: activeStatusFilter === s.value }]"
             @click="setStatusFilter(s.value)"
           >{{ s.label }}</button>
+        </div>
+      </div>
+
+      <!-- Row 3: Items filters -->
+      <div class="tech-filter-row">
+        <div class="tech-filter-row-label">Items</div>
+        <div class="tech-filter-row-controls">
+          <button
+            class="tech-filter-btn"
+            :class="{ active: activeItemFilter === 'all' }"
+            @click="setItemFilter('all')"
+          >All</button>
+          <button
+            class="tech-filter-btn tech-item-filter-btn--parts"
+            :class="{ active: activeItemFilter === 'no-parts' }"
+            @click="setItemFilter('no-parts')"
+          >No Parts Added</button>
+          <button
+            class="tech-filter-btn tech-item-filter-btn--services"
+            :class="{ active: activeItemFilter === 'no-services' }"
+            @click="setItemFilter('no-services')"
+          >No Services Added</button>
         </div>
       </div>
 
@@ -145,12 +145,33 @@
         <!-- Actions -->
         <div class="tech-card-actions">
           <button class="tech-btn-view" @click="openModal(job)">View</button>
+
+          <!-- Diagnose role: Parts + Services -->
+          <template v-if="job.myRole === 'diagnose' && job.status === 'diagnose'">
+            <button
+              class="tech-btn-add-parts"
+              :class="{ 'tech-btn-has-items': job.parts && job.parts.length > 0 }"
+              @click="openItemModal(job, 'parts')"
+            >
+              <span v-if="job.parts && job.parts.length > 0">✏️ Parts <span class="tech-btn-count">{{ job.parts.length }}</span></span>
+              <span v-else>+ Parts</span>
+            </button>
+            <button
+              class="tech-btn-add-services"
+              :class="{ 'tech-btn-has-items': job.addedServices && job.addedServices.length > 0 }"
+              @click="openItemModal(job, 'services')"
+            >
+              <span v-if="job.addedServices && job.addedServices.length > 0">✏️ Services <span class="tech-btn-count">{{ job.addedServices.length }}</span></span>
+              <span v-else>+ Services</span>
+            </button>
+          </template>
+
+          <!-- Service role: Mark Complete -->
           <button
-            v-if="canUpdateStatus(job)"
-            class="tech-btn-update"
-            :class="'tech-btn-update--' + nextStatus(job).value"
+            v-if="job.myRole === 'service' && job.status === 'service'"
+            class="tech-btn-update tech-btn-update--completed"
             @click="openUpdateModal(job)"
-          >{{ nextStatus(job).label }}</button>
+          >Mark Complete</button>
         </div>
       </div>
     </div>
@@ -220,6 +241,18 @@
             <label>Estimated Cost</label>
             <p>${{ modal.job.estimatedCost }}</p>
           </div>
+          <div v-if="modal.job.parts && modal.job.parts.length > 0" class="tech-detail-group">
+            <label>Parts</label>
+            <div class="tech-detail-tags">
+              <span v-for="p in modal.job.parts" :key="p" class="tech-detail-tag tech-detail-tag--parts">{{ p }}</span>
+            </div>
+          </div>
+          <div v-if="modal.job.addedServices && modal.job.addedServices.length > 0" class="tech-detail-group">
+            <label>Added Services</label>
+            <div class="tech-detail-tags">
+              <span v-for="s in modal.job.addedServices" :key="s" class="tech-detail-tag tech-detail-tag--services">{{ s }}</span>
+            </div>
+          </div>
           <div v-if="modal.job.notes" class="tech-detail-group">
             <label>Notes</label>
             <p>{{ modal.job.notes }}</p>
@@ -227,49 +260,94 @@
         </div>
         <div class="tech-modal-actions">
           <button class="tech-btn-secondary" @click="closeModal">Close</button>
-          <button
-            v-if="canUpdateStatus(modal.job)"
-            class="tech-btn-update"
-            :class="'tech-btn-update--' + nextStatus(modal.job).value"
-            @click="openUpdateModal(modal.job); closeModal()"
-          >{{ nextStatus(modal.job).label }}</button>
         </div>
       </div>
     </div>
 
-    <!-- Update Status Confirm Modal -->
+    <!-- Parts / Services Modal -->
+    <div v-if="itemModal.isOpen" class="tech-modal-overlay" @click="closeItemModal">
+      <div class="tech-modal" @click.stop>
+        <button class="tech-modal-close" @click="closeItemModal">&times;</button>
+        <h2>{{ itemModal.type === 'parts' ? '🔩 Parts' : '🔧 Services' }}</h2>
+
+        <div class="tech-modal-body">
+          <p class="tech-item-sub">{{ itemModal.job ? itemModal.job.customerName : '' }} · #{{ itemModal.job ? itemModal.job.id : '' }}</p>
+
+          <!-- Selected items -->
+          <div class="tech-detail-group">
+            <label>
+              Selected
+              <span v-if="itemModal.selected.length > 0" class="tech-selected-count">{{ itemModal.selected.length }}</span>
+            </label>
+            <div v-if="itemModal.selected.length > 0" class="tech-panel-items">
+              <div
+                v-for="(item, idx) in itemModal.selected"
+                :key="idx"
+                class="tech-panel-item"
+                :class="itemModal.type === 'parts' ? 'tech-panel-item--parts' : 'tech-panel-item--services'"
+              >
+                <span>{{ item }}</span>
+                <button class="tech-remove-item" @click="removeItemFromModal(idx)">✕</button>
+              </div>
+            </div>
+            <p v-else class="tech-panel-empty">Nothing selected yet. Search below to add items.</p>
+          </div>
+        </div>
+
+        <!-- Search -->
+        <div class="tech-item-search-section">
+          <label class="tech-item-search-label">{{ itemModal.type === 'parts' ? 'Search Parts' : 'Search Services' }}</label>
+          <div class="tech-search-wrap">
+            <input
+              type="text"
+              class="tech-search-input"
+              :placeholder="itemModal.type === 'parts' ? 'e.g. Brake Pads, Air Filter...' : 'e.g. Oil Change, Wheel Alignment...'"
+              v-model="itemModal.search"
+              @focus="itemModal.dropdownOpen = true"
+              @blur="delayCloseDropdown"
+              ref="itemSearchInput"
+            />
+            <div v-if="itemModal.dropdownOpen && filteredItemList.length > 0" class="tech-dropdown">
+              <div
+                v-for="item in filteredItemList"
+                :key="item"
+                class="tech-dropdown-item"
+                :class="{ 'tech-dropdown-item--selected': isItemSelected(item) }"
+                @mousedown.prevent="toggleItem(item)"
+              >
+                <span>{{ item }}</span>
+                <span v-if="isItemSelected(item)" class="tech-dropdown-check">✓</span>
+              </div>
+            </div>
+            <div v-if="itemModal.dropdownOpen && itemModal.search && filteredItemList.length === 0" class="tech-dropdown">
+              <div class="tech-dropdown-empty">No results found</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions below search -->
+        <div class="tech-modal-actions tech-item-modal-actions">
+          <button class="tech-btn-secondary" @click="closeItemModal">Cancel</button>
+          <button class="tech-btn-view" @click="saveItemModal">Save</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mark Complete Confirm Modal -->
     <div v-if="updateModal.isOpen" class="tech-modal-overlay" @click="closeUpdateModal">
       <div class="tech-modal tech-confirm-modal" @click.stop>
-        <div class="tech-confirm-icon" :class="'tech-confirm-icon--' + nextStatus(updateModal.job).value">
-          {{ nextStatus(updateModal.job).icon }}
-        </div>
-        <h2>{{ nextStatus(updateModal.job).confirmTitle }}</h2>
-        <p class="tech-confirm-desc">{{ nextStatus(updateModal.job).confirmDesc }}</p>
-
+        <div class="tech-confirm-icon tech-confirm-icon--completed">✓</div>
+        <h2>Mark Job Complete</h2>
+        <p class="tech-confirm-desc">Confirm that all service work has been completed for this job order.</p>
         <div class="tech-confirm-card-info">
           <span class="tech-confirm-name">{{ updateModal.job.customerName }}</span>
           <span class="tech-confirm-meta">{{ updateModal.job.vehicleYear }} {{ updateModal.job.vehicleMake }} {{ updateModal.job.vehicleModel }} · #{{ updateModal.job.id }}</span>
           <span class="tech-confirm-service">{{ updateModal.job.serviceType }}</span>
         </div>
-
-        <!-- Notes field for diagnose → quotation -->
-        <div v-if="updateModal.job.status === 'diagnose'" class="tech-notes-field">
-          <label class="tech-notes-label">Diagnose Notes <span class="tech-optional">(optional)</span></label>
-          <textarea
-            v-model="updateModal.notes"
-            class="tech-notes-textarea"
-            placeholder="Describe findings, parts needed, estimated work..."
-            rows="3"
-          ></textarea>
-        </div>
-
         <div class="tech-modal-actions tech-confirm-actions">
           <button class="tech-btn-secondary" @click="closeUpdateModal">Go Back</button>
-          <button
-            class="tech-btn-update"
-            :class="'tech-btn-update--' + nextStatus(updateModal.job).value"
-            @click="submitUpdate"
-          >Confirm</button>
+          <button class="tech-btn-update tech-btn-update--completed" @click="submitUpdate">Confirm</button>
         </div>
       </div>
     </div>
@@ -281,62 +359,90 @@
 export default {
   name: 'TechnicianJobOrders',
   data() {
-    const today = new Date();
-    const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x.toISOString().split('T')[0]; };
-    const subDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() - n); return x.toISOString().split('T')[0]; };
+    const today    = new Date();
+    const addDays  = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x.toISOString().split('T')[0]; };
+    const subDays  = (d, n) => { const x = new Date(d); x.setDate(x.getDate() - n); return x.toISOString().split('T')[0]; };
     const todayStr = today.toISOString().split('T')[0];
 
     const currentTech = { name: 'Ryan Patel', initials: 'RP' };
 
     const allJobCards = [
-      { id: 'JC-001', licensePlate: 'ABC-1234', vehicleMake: 'Toyota',  vehicleModel: 'Camry',    vehicleYear: '2022', customerName: 'James Carter',   status: 'diagnose',          jobDate: todayStr,          serviceType: 'Engine Check',           diagnoseTechnician: 'Ryan Patel',   serviceTechnician: null,         estimatedCost: 120,  notes: 'Customer reports unusual engine noise at idle.' },
-      { id: 'JC-002', licensePlate: 'XYZ-5678', vehicleMake: 'Honda',   vehicleModel: 'Civic',    vehicleYear: '2023', customerName: 'Priya Nair',     status: 'quotation',         jobDate: todayStr,          serviceType: 'Brake Replacement',      diagnoseTechnician: 'Ryan Patel',   serviceTechnician: null,         estimatedCost: 350,  notes: 'Awaiting customer approval on parts quote.' },
-      { id: 'JC-003', licensePlate: 'DEF-9012', vehicleMake: 'Ford',    vehicleModel: 'F-150',    vehicleYear: '2021', customerName: 'Marco Silva',    status: 'waiting-for-parts', jobDate: todayStr,          serviceType: 'Suspension Repair',      diagnoseTechnician: null,           serviceTechnician: 'Ryan Patel', estimatedCost: 780,  notes: 'Parts ordered — ETA 2 days.' },
-      { id: 'JC-004', licensePlate: 'GHI-3456', vehicleMake: 'BMW',     vehicleModel: '3 Series', vehicleYear: '2024', customerName: 'Sarah Mitchell', status: 'service',           jobDate: todayStr,          serviceType: 'Full Service',           diagnoseTechnician: 'Alex Johnson', serviceTechnician: 'Ryan Patel', estimatedCost: 500,  notes: null },
-      { id: 'JC-008', licensePlate: 'STU-5566', vehicleMake: 'Hyundai', vehicleModel: 'Tucson',   vehicleYear: '2021', customerName: 'Nina Patel',     status: 'service',           jobDate: addDays(today, 1), serviceType: 'Oil Change & Filter',    diagnoseTechnician: 'Ryan Patel',   serviceTechnician: null,         estimatedCost: 90,   notes: null },
-      { id: 'JC-009', licensePlate: 'VWX-7788', vehicleMake: 'Kia',     vehicleModel: 'Sportage', vehicleYear: '2023', customerName: 'Leo Fernandez',  status: 'diagnose',          jobDate: subDays(today, 1), serviceType: 'Electrical Fault',       diagnoseTechnician: 'Ryan Patel',   serviceTechnician: null,         estimatedCost: 150,  notes: 'Multiple warning lights on dash.' },
-      { id: 'JC-011', licensePlate: 'BCD-2233', vehicleMake: 'Nissan',  vehicleModel: 'Altima',   vehicleYear: '2021', customerName: 'Grace Huang',    status: 'service',           jobDate: addDays(today, 2), serviceType: 'Transmission Service',   diagnoseTechnician: 'Maria Santos', serviceTechnician: 'Ryan Patel', estimatedCost: 430,  notes: null },
-      { id: 'JC-012', licensePlate: 'EFG-4455', vehicleMake: 'Jeep',    vehicleModel: 'Wrangler', vehicleYear: '2020', customerName: 'Carlos Rivera',  status: 'diagnose',          jobDate: addDays(today, 3), serviceType: 'Steering Check',         diagnoseTechnician: 'Ryan Patel',   serviceTechnician: null,         estimatedCost: 200,  notes: 'Slight pull to the left reported by customer.' },
+      { id: 'JC-001', licensePlate: 'ABC-1234', vehicleMake: 'Toyota',  vehicleModel: 'Camry',    vehicleYear: '2022', customerName: 'James Carter',   status: 'diagnose', jobDate: todayStr,          serviceType: 'Engine Check',         diagnoseTechnician: 'Ryan Patel',   serviceTechnician: null,         estimatedCost: 120, notes: 'Customer reports unusual engine noise at idle.' },
+      { id: 'JC-004', licensePlate: 'GHI-3456', vehicleMake: 'BMW',     vehicleModel: '3 Series', vehicleYear: '2024', customerName: 'Sarah Mitchell', status: 'service',  jobDate: todayStr,          serviceType: 'Full Service',         diagnoseTechnician: 'Alex Johnson', serviceTechnician: 'Ryan Patel', estimatedCost: 500, notes: null },
+      { id: 'JC-008', licensePlate: 'STU-5566', vehicleMake: 'Hyundai', vehicleModel: 'Tucson',   vehicleYear: '2021', customerName: 'Nina Patel',     status: 'service',  jobDate: addDays(today, 1), serviceType: 'Oil Change & Filter',  diagnoseTechnician: 'Ryan Patel',   serviceTechnician: null,         estimatedCost: 90,  notes: null },
+      { id: 'JC-009', licensePlate: 'VWX-7788', vehicleMake: 'Kia',     vehicleModel: 'Sportage', vehicleYear: '2023', customerName: 'Leo Fernandez',  status: 'diagnose', jobDate: subDays(today, 1), serviceType: 'Electrical Fault',     diagnoseTechnician: 'Ryan Patel',   serviceTechnician: null,         estimatedCost: 150, notes: 'Multiple warning lights on dash.' },
+      { id: 'JC-011', licensePlate: 'BCD-2233', vehicleMake: 'Nissan',  vehicleModel: 'Altima',   vehicleYear: '2021', customerName: 'Grace Huang',    status: 'service',  jobDate: addDays(today, 2), serviceType: 'Transmission Service', diagnoseTechnician: 'Maria Santos', serviceTechnician: 'Ryan Patel', estimatedCost: 430, notes: null },
+      { id: 'JC-012', licensePlate: 'EFG-4455', vehicleMake: 'Jeep',    vehicleModel: 'Wrangler', vehicleYear: '2020', customerName: 'Carlos Rivera',  status: 'diagnose', jobDate: addDays(today, 3), serviceType: 'Steering Check',       diagnoseTechnician: 'Ryan Patel',   serviceTechnician: null,         estimatedCost: 200, notes: 'Slight pull to the left reported by customer.' },
     ];
 
     const myJobs = allJobCards
       .filter(j => j.diagnoseTechnician === currentTech.name || j.serviceTechnician === currentTech.name)
-      .map(j => ({ ...j, myRole: j.diagnoseTechnician === currentTech.name ? 'diagnose' : 'service' }));
+      .filter(j => j.status === 'diagnose' || j.status === 'service')
+      .map(j => ({ ...j, myRole: j.diagnoseTechnician === currentTech.name ? 'diagnose' : 'service', parts: [], addedServices: [] }));
 
     return {
       currentTech,
-      activeDateFilter: 'all',
+      activeDateFilter:   'all',
       activeStatusFilter: '',
-      activeRoleFilter: 'all',
-      currentPage: 1,
-      itemsPerPage: 5,
-      specificDate: '',
+      activeItemFilter:   'all',
+      currentPage:        1,
+      itemsPerPage:       5,
+      specificDate:       '',
       dateFilters: [
-        { label: 'Today', value: 'today' },
-        { label: 'This Week', value: 'week' },
+        { label: 'Today',      value: 'today' },
+        { label: 'This Week',  value: 'week'  },
         { label: 'This Month', value: 'month' },
-        { label: 'All', value: 'all' },
+        { label: 'All',        value: 'all'   },
       ],
       jobStatuses: [
-        { value: 'diagnose',          label: 'Diagnose' },
-        { value: 'quotation',         label: 'Quotation' },
-        { value: 'waiting-for-parts', label: 'Waiting For Parts' },
-        { value: 'service',           label: 'Service' },
+        { value: 'diagnose', label: 'Diagnose' },
+        { value: 'service',  label: 'Service'  },
       ],
-      modal: { isOpen: false, job: null },
-      updateModal: { isOpen: false, job: null, notes: '' },
-      jobCards: myJobs,
+
+      predefinedParts: [
+        'Air Filter', 'Oil Filter', 'Brake Pads', 'Brake Rotors', 'Spark Plugs',
+        'Timing Belt', 'Serpentine Belt', 'Cabin Air Filter', 'Fuel Filter',
+        'Wiper Blades', 'Battery', 'Alternator', 'Starter Motor', 'Radiator',
+        'Thermostat', 'Water Pump', 'CV Axle', 'Shock Absorbers', 'Struts',
+        'Control Arm', 'Tie Rod End', 'Ball Joint', 'Wheel Bearing', 'Oxygen Sensor',
+        'MAF Sensor', 'Throttle Body', 'Fuel Injector', 'Catalytic Converter',
+        'Exhaust Manifold', 'Head Gasket', 'Valve Cover Gasket', 'PCV Valve',
+      ],
+      predefinedServices: [
+        'Oil Change', 'Tire Rotation', 'Wheel Alignment', 'Wheel Balancing',
+        'Brake Flush', 'Coolant Flush', 'Transmission Fluid Change',
+        'Power Steering Flush', 'Fuel System Cleaning', 'Air Conditioning Service',
+        'Battery Test & Replace', 'Spark Plug Replacement', 'Timing Belt Service',
+        'Engine Diagnostic Scan', 'Suspension Inspection', 'Brake Inspection',
+        'Exhaust Inspection', 'Full Safety Inspection', 'Pre-purchase Inspection',
+        'Tyre Replacement', 'Headlight Restoration', 'Windshield Repair',
+      ],
+
+      itemModal: {
+        isOpen:       false,
+        job:          null,
+        type:         null,
+        search:       '',
+        dropdownOpen: false,
+        selected:     [],
+      },
+
+      modal:       { isOpen: false, job: null },
+      updateModal: { isOpen: false, job: null },
+      jobCards:    myJobs,
     };
   },
+
   computed: {
-    todayStr() { return new Date().toISOString().split('T')[0]; },
-    startOfWeekStr() { const t = new Date(); const s = new Date(t); s.setDate(t.getDate() - t.getDay()); return s.toISOString().split('T')[0]; },
-    endOfWeekStr()   { const t = new Date(); const e = new Date(t); e.setDate(t.getDate() + (6 - t.getDay())); return e.toISOString().split('T')[0]; },
-    startOfMonthStr(){ const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), 1).toISOString().split('T')[0]; },
-    endOfMonthStr()  { const t = new Date(); return new Date(t.getFullYear(), t.getMonth() + 1, 0).toISOString().split('T')[0]; },
-    diagnosedCount() { return this.jobCards.filter(j => j.myRole === 'diagnose').length; },
-    serviceCount()   { return this.jobCards.filter(j => j.myRole === 'service').length; },
-    totalAssigned()  { return this.jobCards.length; },
+    todayStr()        { return new Date().toISOString().split('T')[0]; },
+    startOfWeekStr()  { const t = new Date(); const s = new Date(t); s.setDate(t.getDate() - t.getDay()); return s.toISOString().split('T')[0]; },
+    endOfWeekStr()    { const t = new Date(); const e = new Date(t); e.setDate(t.getDate() + (6 - t.getDay())); return e.toISOString().split('T')[0]; },
+    startOfMonthStr() { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), 1).toISOString().split('T')[0]; },
+    endOfMonthStr()   { const t = new Date(); return new Date(t.getFullYear(), t.getMonth() + 1, 0).toISOString().split('T')[0]; },
+    diagnosedCount()  { return this.jobCards.filter(j => j.myRole === 'diagnose').length; },
+    serviceCount()    { return this.jobCards.filter(j => j.myRole === 'service').length; },
+    totalAssigned()   { return this.jobCards.length; },
+
     filteredJobs() {
       let list = this.jobCards;
       if (this.specificDate) {
@@ -348,47 +454,71 @@ export default {
       } else if (this.activeDateFilter === 'month') {
         list = list.filter(j => j.jobDate >= this.startOfMonthStr && j.jobDate <= this.endOfMonthStr);
       }
-      if (this.activeRoleFilter !== 'all') list = list.filter(j => j.myRole === this.activeRoleFilter);
-      if (this.activeStatusFilter)        list = list.filter(j => j.status === this.activeStatusFilter);
+      if (this.activeStatusFilter) list = list.filter(j => j.status === this.activeStatusFilter);
+      if (this.activeItemFilter === 'no-parts')    list = list.filter(j => !j.parts || j.parts.length === 0);
+      if (this.activeItemFilter === 'no-services') list = list.filter(j => !j.addedServices || j.addedServices.length === 0);
       return [...list].sort((a, b) => a.jobDate.localeCompare(b.jobDate));
     },
-    totalPages() { return Math.max(1, Math.ceil(this.filteredJobs.length / this.itemsPerPage)); },
+
+    totalPages()    { return Math.max(1, Math.ceil(this.filteredJobs.length / this.itemsPerPage)); },
     paginatedJobs() { const s = (this.currentPage - 1) * this.itemsPerPage; return this.filteredJobs.slice(s, s + this.itemsPerPage); },
+
+    filteredItemList() {
+      const source = this.itemModal.type === 'parts' ? this.predefinedParts : this.predefinedServices;
+      const q      = this.itemModal.search.toLowerCase().trim();
+      return q ? source.filter(i => i.toLowerCase().includes(q)) : source;
+    },
   },
+
   methods: {
-    isToday(date) { return date === this.todayStr; },
-    setDateFilter(val) { this.activeDateFilter = val; this.specificDate = ''; this.currentPage = 1; },
+    isToday(date)        { return date === this.todayStr; },
+    setDateFilter(val)   { this.activeDateFilter = val; this.specificDate = ''; this.currentPage = 1; },
     setStatusFilter(val) { this.activeStatusFilter = val; this.currentPage = 1; },
-    setRoleFilter(val)   { this.activeRoleFilter = val; this.currentPage = 1; },
-    onDateChange() { this.currentPage = 1; },
-    clearDate() { this.specificDate = ''; this.currentPage = 1; },
-    goToPage(page) { if (page >= 1 && page <= this.totalPages) this.currentPage = page; },
-    prevPage() { if (this.currentPage > 1) this.currentPage--; },
-    nextPage() { if (this.currentPage < this.totalPages) this.currentPage++; },
+    setItemFilter(val)   { this.activeItemFilter = val; this.currentPage = 1; },
+    onDateChange()       { this.currentPage = 1; },
+    clearDate()          { this.specificDate = ''; this.currentPage = 1; },
+    goToPage(page)       { if (page >= 1 && page <= this.totalPages) this.currentPage = page; },
+    prevPage()           { if (this.currentPage > 1) this.currentPage--; },
+    nextPage()           { if (this.currentPage < this.totalPages) this.currentPage++; },
     getStatusLabel(status) { const f = this.jobStatuses.find(s => s.value === status); return f ? f.label : status; },
-    formatDate(date) { if (!date) return 'N/A'; return new Date(date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); },
-    getDayName(date) { if (!date) return ''; return new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' }); },
-    canUpdateStatus(job) {
-      if (job.myRole === 'diagnose' && job.status === 'diagnose') return true;
-      if (job.myRole === 'service'  && job.status === 'service')  return true;
-      return false;
+    formatDate(date)     { if (!date) return 'N/A'; return new Date(date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); },
+    getDayName(date)     { if (!date) return ''; return new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' }); },
+
+    openItemModal(job, type) {
+      this.itemModal.job          = job;
+      this.itemModal.type         = type;
+      this.itemModal.selected     = type === 'parts' ? [...job.parts] : [...job.addedServices];
+      this.itemModal.search       = '';
+      this.itemModal.dropdownOpen = false;
+      this.itemModal.isOpen       = true;
+      this.$nextTick(() => { if (this.$refs.itemSearchInput) this.$refs.itemSearchInput.focus(); });
     },
-    nextStatus(job) {
-      if (!job) return {};
-      if (job.myRole === 'diagnose' && job.status === 'diagnose') return { value: 'quotation', label: 'Send to Quotation', icon: '📋', confirmTitle: 'Send to Quotation', confirmDesc: 'Mark this diagnosis as complete and move the job to Quotation stage.' };
-      if (job.myRole === 'service'  && job.status === 'service')  return { value: 'completed', label: 'Mark Complete',     icon: '✓',  confirmTitle: 'Mark Job Complete',  confirmDesc: 'Confirm that all service work has been completed for this job order.' };
-      return {};
+    closeItemModal() {
+      this.itemModal.isOpen       = false;
+      this.itemModal.job          = null;
+      this.itemModal.type         = null;
+      this.itemModal.selected     = [];
+      this.itemModal.search       = '';
+      this.itemModal.dropdownOpen = false;
     },
-    openModal(job)   { this.modal.job = job; this.modal.isOpen = true; },
-    closeModal()     { this.modal.isOpen = false; this.modal.job = null; },
-    openUpdateModal(job) { this.updateModal.job = job; this.updateModal.notes = ''; this.updateModal.isOpen = true; },
+    saveItemModal() {
+      const job  = this.itemModal.job;
+      const type = this.itemModal.type;
+      if (type === 'parts')    job.parts         = [...this.itemModal.selected];
+      if (type === 'services') job.addedServices = [...this.itemModal.selected];
+      this.closeItemModal();
+    },
+    isItemSelected(item)     { return this.itemModal.selected.includes(item); },
+    toggleItem(item)         { const i = this.itemModal.selected.indexOf(item); if (i === -1) this.itemModal.selected.push(item); else this.itemModal.selected.splice(i, 1); },
+    removeItemFromModal(idx) { this.itemModal.selected.splice(idx, 1); },
+    delayCloseDropdown()     { setTimeout(() => { this.itemModal.dropdownOpen = false; }, 150); },
+
+    openModal(job)       { this.modal.job = job; this.modal.isOpen = true; },
+    closeModal()         { this.modal.isOpen = false; this.modal.job = null; },
+    openUpdateModal(job) { this.updateModal.job = job; this.updateModal.isOpen = true; },
     closeUpdateModal()   { this.updateModal.isOpen = false; this.updateModal.job = null; },
     submitUpdate() {
-      const job  = this.updateModal.job;
-      const next = this.nextStatus(job);
-      if (this.updateModal.notes) job.notes = this.updateModal.notes;
-      job.status = next.value;
-      console.log('Status updated:', job.id, '->', next.value);
+      this.updateModal.job.status = 'completed';
       this.closeUpdateModal();
     },
   },
