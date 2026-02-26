@@ -7,13 +7,20 @@
         <div class="avatar">{{ initials }}</div>
       </div>
 
-      <h1 class="card-name">{{ profile.name }}</h1>
+      <h1 class="card-name">{{ profile.name}}</h1>
       <p class="card-email-sub">{{ profile.email }}</p>
 
       <div class="divider"></div>
 
       <!-- Fields -->
       <div class="fields">
+        <div class="field-row">
+          <div class="field-meta">
+            <span class="field-label">Role</span>
+            <span class="field-value">{{ profile.role || 'err'}}</span>
+          </div>
+        </div>
+
         <div class="field-row">
           <div class="field-meta">
             <span class="field-label">Name</span>
@@ -115,13 +122,16 @@
 </template>
 
 <script>
+import {supabase} from '@/supabase.js'
+
 export default {
   name: 'ProfilePage',
   data() {
     return {
       profile: {
-        name: 'Alexandra Johnson',
-        email: 'alex.johnson@example.com',
+        name: '',
+        email: '',
+        role: '',
       },
       modal: {
         isOpen: false,
@@ -130,6 +140,7 @@ export default {
       toast: '',
       error: '',
       form: {
+        role: '',
         name: '',
         email: '',
         emailConfirm: '',
@@ -141,6 +152,7 @@ export default {
   },
   computed: {
     initials() {
+      if (!this.profile.name) return "Unable to fetch.";
       return this.profile.name
         .split(' ')
         .map(w => w[0])
@@ -149,11 +161,60 @@ export default {
         .toUpperCase();
     },
   },
+
+  async mounted() {
+    await this.fetchProfile();
+  },
+
   methods: {
+  async fetchProfile() {
+    try {
+      // get jwt token
+      const token = localStorage.getItem('token');
+      if (!token) {
+        this.$router.push('/login');
+        return;
+      }
+
+      // extract the user's ID
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const userId = payload.sub; // standard JWT subject claim = user UUID
+      console.log("payload:", payload);
+      console.log("userId:", userId);
+
+      if (!userId) {
+        console.error('Could not extract user ID from token');
+        this.$router.push('/login');
+        return;
+      }
+
+      // fetch user's information using user ID
+      const { data, error: dbError } = await supabase
+        .from('Profiles')
+        .select('"Name", "Email", "Role"')
+        .eq('"ID"', userId)
+        .single();
+
+      if (dbError) {
+        console.error('Error fetching profile:', dbError);
+        return;
+      }
+
+      // NEW: Populate profile with data from DB
+      this.profile.name = data.Name;
+      this.profile.email = data.Email;
+      this.profile.role = data.Role;
+
+    } catch (err) {
+      console.error('Unexpected error fetching profile:', err);
+    }
+  },
     openModal(type) {
       this.error = '';
       this.modal.type = type;
       this.modal.isOpen = true;
+
+      if (type === 'role') this.form.role = this.profile.role;
       if (type === 'name') this.form.name = this.profile.name;
       if (type === 'email') { this.form.email = ''; this.form.emailConfirm = ''; }
       if (type === 'password') { this.form.current = ''; this.form.newPass = ''; this.form.confirm = ''; }
