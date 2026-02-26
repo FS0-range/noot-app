@@ -163,6 +163,11 @@
             <img :src="profileIcon" alt="Profile" class="profile-icon" />
             Profile
           </router-link>
+          <li v-if="isAdmin" class="nav-item">
+            <router-link to="/admin-register-user" class="nav-link" active-class="active">
+              👤 Register Staff Account
+            </router-link>
+          </li>
           <button class="btn btn-danger" @click="$emit('logout')">🚪 Logout</button>
         </div>
 
@@ -188,7 +193,7 @@ import profileIcon from '@/assets/profile.svg'
 
 const props = defineProps<{
   user: {
-    role: 'customer' | 'manager' | 'technician'
+    role: 'customer' | 'manager' | 'technician' | 'administrator'
     loggedIn: boolean
   } | null
 }>()
@@ -200,9 +205,12 @@ const isOpen = ref(false)
 // Computed properties
 const isLoggedIn = computed(() => props.user !== null)
 const isCustomer = computed(() => props.user?.role === 'customer')
-const isManager = computed(() => props.user?.role === 'manager')
+const isManager = computed(() =>
+  props.user?.role === 'manager' || props.user?.role === 'administrator'
+)
 const isTechnician = computed(() => props.user?.role === 'technician')
-const isStaff = computed(() => isManager.value || isTechnician.value)
+const isAdmin = computed(() => props.user?.role === 'administrator')
+const isStaff = computed(() => isManager.value || isTechnician.value || isAdmin.value)
 
 const route = useRoute()
 watch(() => route.fullPath, () => {

@@ -7,7 +7,7 @@ const router = useRouter()
 
 const currentMode = ref<'login' | 'register'>('login')
 const loginForm = reactive({ email: '', password: '' })
-const registerForm = reactive({ name: '', role: '', email: '', password: '', confirmPassword: '' })
+const registerForm = reactive({ name: '', role: 'customer', email: '', password: '', confirmPassword: '' })
 const error = ref('')
 const loading = ref(false)
 
@@ -185,16 +185,6 @@ const handleRegister = async () => {
           required
           :disabled="loading"
         />
-      </div>
-
-      <!-- Role dropdown (register only) -->
-      <div v-if="currentMode === 'register'" class="form-group">
-        <label>Role</label>
-        <select v-model="registerForm.role" :disabled="loading" class="form-control">
-          <option value="customer">Customer</option>
-          <option value="manager">Manager</option>
-          <option value="technician">Technician</option>
-        </select>
       </div>
 
       <!-- Email -->

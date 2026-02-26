@@ -68,6 +68,12 @@ const routes = [
     meta: { requiresAuth: true, roles: ['manager', 'technician'] },
     component: () => import('../views/JobCards.vue'),
   },
+  {
+    path: '/admin-register-user',
+    name: 'adminRegisterUser',
+    meta: { requiresAuth: true, roles: ['administrator'] },
+    component: () => import('../views/AdminRegisterUser.vue'),
+  },
 ]
 
 const router = createRouter({
