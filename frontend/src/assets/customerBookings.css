@@ -1,3 +1,8 @@
+/* ════════════════════════════════════════════════════════════════
+   customerBookings.css
+   Covers: Appointments tab + In Progress (Job Cards) tab + Tabs UI
+   ════════════════════════════════════════════════════════════════ */
+
 /* ── Container ── */
 .bookings-container {
   padding: 2rem;
@@ -6,12 +11,14 @@
   margin: 0 auto;
 }
 
+/* ── Header ── */
 .bookings-header {
-  margin-bottom: 2rem;
+  margin-bottom: 0;
   background: #1c1c1c;
   border: 1px solid #2e2e2e;
-  border-radius: 10px;
-  padding: 1.5rem 2rem;
+  border-radius: 10px 10px 0 0;
+  padding: 1.5rem 2rem 0;
+  border-bottom: none;
 }
 
 .bookings-header h1 {
@@ -26,11 +33,68 @@
   font-size: 1rem;
 }
 
+/* ── Tab Switcher ── */
+.tab-switcher {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.4rem;
+  border: 1px solid #2e2e2e;
+  background: #141414;
+  color: #888888;
+  border-radius: 8px 8px 0 0;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.92rem;
+  transition: all 0.2s ease;
+  position: relative;
+  bottom: -1px;
+}
+
+.tab-btn:hover {
+  color: #FFD700;
+  border-color: #FFD700;
+}
+
+.tab-btn.active {
+  background: #1c1c1c;
+  color: #FFD700;
+  border-color: #FFD700;
+  border-bottom-color: #1c1c1c;
+}
+
+.tab-count {
+  background: rgba(255, 215, 0, 0.15);
+  color: #FFD700;
+  border-radius: 12px;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+}
+
+.tab-btn:not(.active) .tab-count {
+  background: rgba(255, 255, 255, 0.06);
+  color: #666;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   APPOINTMENTS TAB
+   ════════════════════════════════════════════════════════════════ */
+
 /* ── Filter and Sort Controls ── */
 .filter-sort-container {
   background: #1c1c1c;
   border: 1px solid #2e2e2e;
-  border-radius: 10px;
+  border-top: none;
+  border-radius: 0 10px 10px 10px;
   padding: 1.5rem;
   margin-bottom: 2rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -88,6 +152,26 @@
   font-weight: 700;
 }
 
+.filter-btn--upcoming.active {
+  background: #FFD700;
+  color: #111111;
+  border-color: #FFD700;
+}
+
+.filter-btn--completed.active {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+  border-color: #4ade80;
+  font-weight: 700;
+}
+
+.filter-btn--cancelled.active {
+  background: rgba(248, 113, 113, 0.2);
+  color: #f87171;
+  border-color: #f87171;
+  font-weight: 700;
+}
+
 .sort-group {
   display: flex;
   align-items: center;
@@ -113,33 +197,6 @@
   transform: scale(1.05);
 }
 
-@media (max-width: 768px) {
-  .filter-sort-container {
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .filter-buttons {
-    gap: 0.5rem;
-  }
-
-  .filter-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
-  }
-
-  .sort-group {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .sort-btn {
-    width: 100%;
-    padding: 0.7rem 1rem;
-  }
-}
-
 /* ── No Bookings ── */
 .no-bookings {
   text-align: center;
@@ -155,6 +212,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 .booking-row {
@@ -173,6 +231,54 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
   border-color: #FFD700;
 }
+
+/* ── Next Up Indicator ── */
+.booking-row--next-up {
+  border-color: #FFD700;
+  box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.25), 0 4px 20px rgba(255, 215, 0, 0.12);
+  position: relative;
+}
+
+.next-up-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.18) 0%, transparent 100%);
+  color: #FFD700;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.28rem 1rem 0.28rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+  pointer-events: none;
+}
+
+.next-up-pulse {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #FFD700;
+  flex-shrink: 0;
+  animation: nextUpPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes nextUpPulse {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.5); }
+  50% { opacity: 0.8; transform: scale(1.15); box-shadow: 0 0 0 4px rgba(255, 215, 0, 0); }
+}
+
+/* Push card content down to make room for banner */
+.booking-row--next-up .row-status,
+.booking-row--next-up .row-content {
+  margin-top: 1.6rem;
+}
+
 
 /* ── Status Column ── */
 .row-status {
@@ -350,69 +456,7 @@
   transform: scale(1.05);
 }
 
-@media (max-width: 1024px) {
-  .row-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.5rem;
-  }
-
-  .booking-details {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .appointment-details {
-    flex-direction: column;
-  }
-
-  .row-actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-}
-
-@media (max-width: 768px) {
-  .bookings-container {
-    padding: 1rem;
-  }
-
-  .bookings-header h1 {
-    font-size: 2rem;
-  }
-
-  .row-status {
-    padding: 1rem;
-    min-width: 100px;
-  }
-
-  .row-content {
-    flex-direction: column;
-    padding: 1rem;
-  }
-
-  .booking-title h3 {
-    font-size: 1.1rem;
-  }
-
-  .booking-details {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .row-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .btn-view,
-  .btn-edit,
-  .btn-cancel {
-    flex: 1;
-  }
-}
-
-/* ── Modal ── */
+/* ── Modal (Appointments) ── */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -596,7 +640,7 @@
   transform: scale(1.05);
 }
 
-/* ── Pagination ── */
+/* ── Appointments Pagination ── */
 .pagination-container {
   display: flex;
   align-items: center;
@@ -669,7 +713,591 @@
   font-weight: 700;
 }
 
+/* ════════════════════════════════════════════════════════════════
+   IN PROGRESS TAB — JOB CARDS
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Job Cards Filter Bar ── */
+.jc-filter-bar {
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  border-top: none;
+  border-radius: 0 10px 10px 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.jc-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #232323;
+  flex-wrap: wrap;
+}
+
+.jc-filter-row:last-of-type {
+  border-bottom: none;
+}
+
+.jc-filter-row-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  min-width: 60px;
+}
+
+.jc-filter-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.jc-filter-btn {
+  padding: 0.4rem 1rem;
+  border: 1px solid #2a2a2a;
+  background: #141414;
+  color: #888;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.jc-filter-btn:hover {
+  border-color: #FFD700;
+  color: #FFD700;
+  background: rgba(255, 215, 0, 0.07);
+}
+
+.jc-filter-btn.active {
+  background: #FFD700;
+  color: #111;
+  border-color: #FFD700;
+  font-weight: 700;
+}
+
+/* Status-specific filter button colors */
+.jc-status-btn--diagnose.active    { background: rgba(99, 179, 237, 0.2);  color: #63b3ed; border-color: #63b3ed; }
+.jc-status-btn--quotation.active   { background: rgba(246, 173, 85, 0.2);  color: #f6ad55; border-color: #f6ad55; }
+.jc-status-btn--waiting-for-parts.active { background: rgba(197, 128, 235, 0.2); color: #c580eb; border-color: #c580eb; }
+.jc-status-btn--service.active     { background: rgba(74, 222, 128, 0.2);  color: #4ade80; border-color: #4ade80; }
+
+/* Date input */
+.jc-date-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.jc-date-input {
+  padding: 0.38rem 0.7rem;
+  border: 1px solid #2a2a2a;
+  background: #141414;
+  color: #888;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.18s;
+  outline: none;
+}
+
+.jc-date-input:hover,
+.jc-date-input.active {
+  border-color: #FFD700;
+  color: #FFD700;
+}
+
+.jc-clear-date {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+
+.jc-clear-date:hover {
+  color: #f87171;
+}
+
+/* Count row */
+.jc-count-row {
+  padding: 0.5rem 0 0;
+}
+
+.jc-count {
+  font-size: 0.8rem;
+  color: #555;
+  font-weight: 600;
+}
+
+/* ── Empty State ── */
+.jc-empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  color: #555;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+}
+
+/* ── Job Cards List ── */
+.jc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.jc-card {
+  display: flex;
+  align-items: stretch;
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.jc-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  border-color: #FFD700;
+}
+
+.jc-card--today {
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+/* ── Status Column ── */
+.jc-status-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1rem;
+  background: #141414;
+  min-width: 110px;
+}
+
+.jc-status-col--diagnose    { border-left: 3px solid #63b3ed; }
+.jc-status-col--quotation   { border-left: 3px solid #f6ad55; }
+.jc-status-col--waiting-for-parts { border-left: 3px solid #c580eb; }
+.jc-status-col--service     { border-left: 3px solid #4ade80; }
+
+.jc-card-day {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.jc-status-badge {
+  padding: 0.3rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.jc-status-badge--diagnose          { background: rgba(99, 179, 237, 0.15);  color: #63b3ed; }
+.jc-status-badge--quotation         { background: rgba(246, 173, 85, 0.15);  color: #f6ad55; }
+.jc-status-badge--waiting-for-parts { background: rgba(197, 128, 235, 0.15); color: #c580eb; }
+.jc-status-badge--service           { background: rgba(74, 222, 128, 0.15);  color: #4ade80; }
+
+/* ── Divider ── */
+.jc-divider {
+  width: 2px;
+  background: #2e2e2e;
+  flex-shrink: 0;
+}
+
+.jc-divider--diagnose    { background: rgba(99, 179, 237, 0.2); }
+.jc-divider--quotation   { background: rgba(246, 173, 85, 0.2); }
+.jc-divider--waiting-for-parts { background: rgba(197, 128, 235, 0.2); }
+.jc-divider--service     { background: rgba(74, 222, 128, 0.2); }
+
+/* ── Card Body ── */
+.jc-card-body {
+  flex: 1;
+  padding: 1.25rem 1.5rem;
+}
+
+.jc-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.3rem;
+}
+
+.jc-card-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin: 0;
+}
+
+.jc-card-id {
+  font-size: 0.78rem;
+  color: #444;
+  font-weight: 500;
+}
+
+.jc-card-vehicle {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0 0 0.75rem;
+}
+
+.jc-card-meta {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.jc-meta-tag {
+  padding: 0.25rem 0.65rem;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.jc-meta-tag--date        { background: rgba(255,255,255,0.05); color: #777; }
+.jc-meta-tag--service     { background: rgba(255, 215, 0, 0.08); color: #b89c00; border: 1px solid rgba(255,215,0,0.15); }
+.jc-meta-tag--technician  { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
+.jc-meta-tag--unassigned  { background: rgba(248, 113, 113, 0.1); color: #f87171; font-style: italic; }
+
+/* ── Card Actions ── */
+.jc-card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1.25rem 1.25rem 0;
+  flex-shrink: 0;
+}
+
+.jc-btn-view {
+  padding: 0.5rem 1.2rem;
+  background: #FFD700;
+  color: #111111;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.jc-btn-view:hover {
+  background: #e6c200;
+  transform: scale(1.05);
+}
+
+/* ── Job Cards Pagination ── */
+.jc-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.jc-pagination-btn {
+  padding: 0.6rem 1.2rem;
+  border: 1px solid #FFD700;
+  background: transparent;
+  color: #FFD700;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.jc-pagination-btn:hover:not(:disabled) {
+  background: #FFD700;
+  color: #111111;
+  transform: scale(1.05);
+}
+
+.jc-pagination-btn:disabled {
+  border-color: #333333;
+  color: #444444;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.jc-pagination-pages {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.jc-pagination-page {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #2a2a2a;
+  background: #141414;
+  color: #888888;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  min-width: 38px;
+  text-align: center;
+}
+
+.jc-pagination-page:hover {
+  border-color: #FFD700;
+  color: #FFD700;
+  background: rgba(255, 215, 0, 0.08);
+}
+
+.jc-pagination-page.active {
+  background: #FFD700;
+  color: #111111;
+  border-color: #FFD700;
+  font-weight: 700;
+}
+
+/* ── Job Card View Modal ── */
+.jc-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.jc-modal {
+  background: #1c1c1c;
+  border: 1px solid #2e2e2e;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 2rem;
+}
+
+.jc-modal h2 {
+  font-size: 1.6rem;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+  font-weight: 600;
+}
+
+.jc-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666666;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.jc-modal-close:hover {
+  color: #FFD700;
+}
+
+.jc-modal-body {
+  margin-bottom: 1.5rem;
+}
+
+.jc-detail-group {
+  margin-bottom: 1.25rem;
+}
+
+.jc-detail-group label {
+  display: block;
+  font-weight: 600;
+  color: #666666;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.4rem;
+}
+
+.jc-detail-group p {
+  color: #e0e0e0;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.jc-modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.jc-btn-secondary {
+  padding: 0.65rem 1.4rem;
+  border: 1px solid #3a3a3a;
+  background: transparent;
+  color: #aaaaaa;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.jc-btn-secondary:hover {
+  border-color: #666666;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .row-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .booking-details {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .appointment-details {
+    flex-direction: column;
+  }
+
+  .row-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .jc-card-actions {
+    flex-direction: row;
+    align-items: center;
+    padding: 0 1rem 1rem;
+  }
+}
+
 @media (max-width: 768px) {
+  .bookings-container {
+    padding: 1rem;
+  }
+
+  .bookings-header h1 {
+    font-size: 2rem;
+  }
+
+  .tab-btn {
+    padding: 0.55rem 1rem;
+    font-size: 0.82rem;
+  }
+
+  /* Appointments */
+  .filter-sort-container {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-buttons {
+    gap: 0.5rem;
+  }
+
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .sort-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .sort-btn {
+    width: 100%;
+    padding: 0.7rem 1rem;
+  }
+
+  .row-status {
+    padding: 1rem;
+    min-width: 100px;
+  }
+
+  .row-content {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .booking-title h3 {
+    font-size: 1.1rem;
+  }
+
+  .booking-details {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .row-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn-view,
+  .btn-edit,
+  .btn-cancel {
+    flex: 1;
+  }
+
   .pagination-container {
     flex-wrap: wrap;
     gap: 0.75rem;
@@ -686,4 +1314,135 @@
     font-size: 0.75rem;
     min-width: 32px;
   }
+
+  /* Job Cards */
+  .jc-filter-bar {
+    padding: 1rem;
+  }
+
+  .jc-filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .jc-filter-row-label {
+    min-width: unset;
+  }
+
+  .jc-card {
+    flex-direction: column;
+  }
+
+  .jc-status-col {
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: unset;
+    padding: 0.75rem 1rem;
+    border-left: none;
+    border-bottom: 2px solid;
+  }
+
+  .jc-status-col--diagnose    { border-bottom-color: #63b3ed; }
+  .jc-status-col--quotation   { border-bottom-color: #f6ad55; }
+  .jc-status-col--waiting-for-parts { border-bottom-color: #c580eb; }
+  .jc-status-col--service     { border-bottom-color: #4ade80; }
+
+  .jc-divider { display: none; }
+
+  .jc-card-body {
+    padding: 1rem;
+  }
+
+  .jc-card-actions {
+    flex-direction: row;
+    padding: 0 1rem 1rem;
+  }
+
+  .jc-pagination {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .jc-pagination-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .jc-pagination-page {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+    min-width: 32px;
+  }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   TECHNICIAN CONTACT & ITEM LIST (Active / Finished Jobs modals)
+   ════════════════════════════════════════════════════════════════ */
+
+.jc-tech-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+  padding: 0.6rem 0.85rem;
+  background: rgba(255, 215, 0, 0.06);
+  border-left: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 0 6px 6px 0;
+}
+
+.jc-tech-contact-item {
+  font-size: 0.85rem;
+  color: #aaaaaa;
+}
+
+.jc-not-assigned {
+  color: #555 !important;
+  font-style: italic;
+}
+
+/* ── Parts / Services item list ── */
+.jc-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.jc-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.45rem 0.85rem;
+  background: #181818;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  font-size: 0.88rem;
+}
+
+.jc-item-name {
+  color: #cccccc;
+}
+
+.jc-item-price {
+  color: #FFD700;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-left: 1rem;
+}
+
+/* ── Extra meta tag colours ── */
+.jc-meta-tag--parts    { background: rgba(99, 179, 237, 0.1); color: #63b3ed; }
+.jc-meta-tag--services { background: rgba(154, 230, 180, 0.1); color: #9ae6b4; }
+.jc-meta-tag--cost     { background: rgba(255, 215, 0, 0.1); color: #FFD700; font-weight: 700; }
+
+/* ── Finished job status badge colours ── */
+.jc-status-col--completed  { border-left: 3px solid #4ade80; }
+.jc-status-col--invoiced   { border-left: 3px solid #f6ad55; }
+.jc-status-badge--completed { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+.jc-status-badge--invoiced  { background: rgba(246, 173, 85, 0.15);  color: #f6ad55; }
+.jc-divider--completed      { background: rgba(74, 222, 128, 0.2); }
+.jc-divider--invoiced       { background: rgba(246, 173, 85, 0.2); }
+.jc-status-btn--completed.active { background: rgba(74, 222, 128, 0.2); color: #4ade80; border-color: #4ade80; font-weight: 700; }
+.jc-status-btn--invoiced.active  { background: rgba(246, 173, 85, 0.2);  color: #f6ad55; border-color: #f6ad55; font-weight: 700; }
