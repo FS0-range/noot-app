@@ -79,32 +79,35 @@
           required 
         />
       </div>
-      
+
       <div class="form-group">
         <label for="date">Appointment Date</label>
-        <input 
-          id="date" 
-          type="date" 
+        <input
+          id="date"
+          type="date"
           v-model="formData.date"
-          required 
+          :min="minDate"
+          :max="maxDate"
+          @change="onDateChange"
+          required
         />
+        <p v-if="isSunday" class="error-text" style="color: red; font-size: 0.85rem; margin-top: 4px;">
+          Sundays are not available. Please select another date.
+        </p>
       </div>
       
       <div class="form-group">
-        <label for="time">Appointment Time (Need to know how is it schdeuled and how long 1 approx takes, dummy values for now)</label>
-        <select id="time" v-model="formData.time" required>
+        <label for="time">Appointment Time</label>
+        <select id="time" v-model="formData.time" :disabled="!formData.date || isSunday" required>
           <option value="">Select time</option>
-          <option value="08:00">08:00 AM</option>
-          <option value="09:00">09:00 AM</option>
-          <option value="10:00">10:00 AM</option>
-          <option value="11:00">11:00 AM</option>
-          <option value="12:00">12:00 PM</option>
-          <option value="13:00">01:00 PM</option>
-          <option value="14:00">02:00 PM</option>
-          <option value="15:00">03:00 PM</option>
-          <option value="16:00">04:00 PM</option>
-          <option value="17:00">05:00 PM</option>
-          <option value="18:00">06:00 PM</option>
+          <option 
+            v-for="slot in timeSlots" 
+            :key="slot.value" 
+            :value="slot.value" 
+            :disabled="slot.disabled"
+          >
+            {{ slot.label }} {{ slot.disabled ? '(Unavailable)' : '' }}
+          </option>
         </select>
       </div>
       
@@ -120,13 +123,27 @@
         ></textarea>
       </div>
       
-      <button type="submit" class="submit-btn">Confirm Booking</button>
+      <button type="submit" class="submit-btn" :disabled="isLoading || isSunday">
+        {{ isLoading ? 'Booking...' : 'Confirm Booking' }}
+      </button>
     </form>
   </div>
 </template>
 
 <script>
 import { commonCarData } from '../data/commonCarData.js';
+
+const ALL_SLOTS = [
+  { value: '10:00', label: '10:00 AM' },
+  { value: '11:00', label: '11:00 AM' },
+  { value: '12:00', label: '12:00 PM' },
+  { value: '13:00', label: '01:00 PM' },
+  { value: '14:00', label: '02:00 PM' },
+  { value: '15:00', label: '03:00 PM' },
+  { value: '16:00', label: '04:00 PM' },
+]
+
+const SATURDAY_SLOTS = ALL_SLOTS.filter(s => ['10:00', '11:00', '12:00'].includes(s.value))
 
 export default {
   name: 'BookingView',
@@ -142,6 +159,8 @@ export default {
         time: '',
         notes: ''
       },
+      isLoading: false,
+      bookedSlots: [],
       commonCarData: commonCarData,
       makeSelection: '',
       modelSelection: '',
@@ -154,10 +173,51 @@ export default {
       return Object.keys(this.commonCarData).sort();
     },
     availableModels() {
-      if (!this.formData.make) {
-        return [];
-      }
+      if (!this.formData.make) return [];
       return this.commonCarData[this.formData.make] || [];
+    },
+    minDate() {
+      return new Date().toISOString().split('T')[0]
+    },
+    maxDate() {
+      const oneMonth = new Date()
+      oneMonth.setMonth(oneMonth.getMonth() + 1)
+      return oneMonth.toISOString().split('T')[0]
+    },
+    isSunday() {
+      if (!this.formData.date) return false
+      return new Date(this.formData.date + 'T00:00:00').getDay() === 0
+    },
+    isSaturday() {
+      if (!this.formData.date) return false
+      return new Date(this.formData.date + 'T00:00:00').getDay() === 6
+    },
+    isToday() {
+      if (!this.formData.date) return false
+      return this.formData.date === new Date().toISOString().split('T')[0]
+    },
+    currentHour() {
+      return new Date().getHours()
+    },
+    timeSlots() {
+      if (!this.formData.date || this.isSunday) return []
+
+      const slots = this.isSaturday ? SATURDAY_SLOTS : ALL_SLOTS
+
+      return slots.map(slot => {
+        const slotHour = parseInt(slot.value.split(':')[0])
+        const isPast = this.isToday && slotHour <= this.currentHour
+        const isBooked = this.bookedSlots.some(b => {
+          const dateMatch = b.appointment_date === this.formData.date
+          const timeMatch = b.appointment_time.startsWith(slot.value)
+          return dateMatch && timeMatch
+        })
+
+        return {
+          ...slot,
+          disabled: isPast || isBooked
+        }
+      })
     }
   },
   methods: {
@@ -169,8 +229,6 @@ export default {
         this.showCustomMakeInput = false;
         this.formData.make = this.makeSelection;
       }
-      
-      // Reset model when make changes
       this.formData.model = '';
       this.modelSelection = '';
       this.showCustomModelInput = false;
@@ -184,42 +242,67 @@ export default {
         this.formData.model = this.modelSelection;
       }
     },
-    handleSubmit() {
-      // Log to console
-      console.log('Form submitted:', this.formData);
-      console.log(this.formData)
-      // Send to backend API
-      // fetch('/api/bookings', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(this.formData)
-      // })
-      // .then(response => response.json())
-      // .then(data => {
-      //   console.log('Success:', data);
-      //   alert('Booking confirmed!');
-      // })
-      // .catch(error => {
-      //   console.error('Error:', error);
-      // });
-      
-      // Show success message
-      alert('Booking confirmed!');
-      
-      // Optional: Reset form
-      this.resetForm();
+    async onDateChange() {
+      this.formData.time = ''
+      if (!this.formData.date || this.isSunday) return
+      await this.fetchBookedSlots()
     },
-
-    validatePhoneNumber(phone) {
-      // Remove spaces and dashes
-      const cleanedPhone = phone.replace(/[\s\-]/g, '');
-      // Must start with +, followed by 8-15 digits
-      const phoneRegex = /^\+[0-9]{8,15}$/;
-      return phoneRegex.test(cleanedPhone);
+    async fetchBookedSlots() {
+      try {
+        const response = await fetch('http://localhost:3000/api/customer/bookedSlots')
+        const data = await response.json()
+        this.bookedSlots = data.data || []
+      } catch (err) {
+        console.error('Failed to fetch booked slots:', err)
+      }
     },
+    async handleSubmit() {
+      if (this.isSunday) {
+        alert('Sundays are not available for bookings.')
+        return
+      }
 
+      const token = localStorage.getItem('token')
+
+      const payload = {
+        appointment_date: this.formData.date,
+        appointment_time: this.formData.time,
+        customer_notes: this.formData.notes,
+        vehicle_license_plate: this.formData.licensePlate,
+        vehicle_make: `${this.formData.make} ${this.formData.model}`.trim(),
+        vehicle_year: String(this.formData.year),
+        phone_number: this.formData.phone
+      }
+
+      this.isLoading = true
+
+      try {
+        const response = await fetch('http://localhost:3000/api/customer/createAppointment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          const errorMsg = data.message || data.error || 'Unknown error'
+          alert(`Booking failed: ${errorMsg}`)
+          return
+        }
+
+        alert('Booking confirmed!')
+        this.resetForm()
+      } catch (error) {
+        console.error('Error:', error)
+        alert('Something went wrong. Please try again.')
+      } finally {
+        this.isLoading = false
+      }
+    },
     resetForm() {
       this.formData = {
         licensePlate: '',
@@ -231,6 +314,11 @@ export default {
         time: '',
         notes: ''
       };
+      this.makeSelection = '';
+      this.modelSelection = '';
+      this.showCustomMakeInput = false;
+      this.showCustomModelInput = false;
+      this.bookedSlots = [];
     }
   }
 }
