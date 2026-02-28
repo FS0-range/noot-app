@@ -4,88 +4,31 @@ const router = express.Router()
 module.exports = (supabase) => {
 
   // LOGIN
-  router.post('/login', async (req, res) => {
-    try {
-      const { email, password } = req.body
+router.post('/login', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '')
+    
+    // just verify who they are
+    const { data: { user } } = await supabase.auth.getUser(token)
+    
+    // fetch their profile
+    const { data: userProfile } = await supabase
+      .from('Profiles')
+      .select('ID, Name, Email, Role')
+      .eq('Email', user.email)
+      .single()
 
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      })
-
-      if (authError) {
-        return res.status(401).json({ message: authError.message })
+    res.json({
+      user: {
+        id: userProfile.ID,
+        email: userProfile.Email,
+        role: userProfile.Role,
       }
-
-      const { data: userProfile, error: profileError } = await supabase
-        .from('Profiles')
-        .select('ID, Name, Email, Role')
-        .eq('Email', email)
-        .single()
-
-      if (profileError || !userProfile) {
-        return res.status(404).json({ message: 'User profile not found' })
-      }
-
-      console.log('🔍 Found user:', userProfile)
-
-      res.json({
-        user: {
-          id: userProfile.ID,
-          email: userProfile.Email,
-          role: userProfile.Role,
-        },
-        token: authData.session.access_token
-      })
-    } catch (err) {
-      console.error('Login error:', err)
-      res.status(500).json({ error: err.message })
-    }
-  })
-
-  // REGISTER
-  router.post('/register', async (req, res) => {
-    try {
-      const { name, email, password, role } = req.body
-
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password
-      })
-
-      if (authError) {
-        return res.status(400).json({ message: authError.message })
-      }
-
-      const { data: userProfile, error: profileError } = await supabase
-        .from('Profiles')
-        .insert({
-          ID: authData.user.id,
-          Name: name,
-          Email: email,
-          Role: role,
-        })
-        .select()
-        .single()
-
-      if (profileError) {
-        console.error('Profile insert error:', profileError)
-        return res.status(500).json({ message: profileError.message })
-      }
-
-      res.json({
-        user: {
-          id: userProfile.ID,
-          email: userProfile.Email,
-          role: userProfile.Role
-        },
-        token: authData.session?.access_token
-      })
-    } catch (err) {
-      res.status(500).json({ error: err.message })
-    }
-  })
-
+    })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
   // VERIFY TOKEN
   router.post('/verify', async (req, res) => {
     try {
@@ -158,6 +101,50 @@ module.exports = (supabase) => {
       res.status(500).json({ error: err.message })
     }
   })
+// ** REGISTER
+router.post('/register', async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body
+
+    // Create auth user
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password
+    })
+
+    if (authError) {
+      return res.status(400).json({ message: authError.message })
+    }
+
+    // Insert user profile (default customer)
+     const { data: userProfile, error: profileError } = await supabase
+      .from('Profiles')
+      .insert({
+        ID: authData.user.id,  // 👈 links to auth.users
+        Name: name,            // 👈 lowercase from req.body, capitalized for column
+        Email: email,
+        Role: role,
+      })
+      .select()
+      .single()
+
+    if (profileError) {
+      console.error('Profile insert error:', profileError) // 👈 check your terminal for the real error
+      return res.status(500).json({ message: profileError.message })
+    }
+
+    res.json({
+      user: {
+        id: userProfile.ID,
+        email: userProfile.Email,  // 👈 match your column casing
+        role: userProfile.Role
+      },
+      token: authData.session?.access_token
+    })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
 
   return router
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { supabase } from '@/supabase.js'
 
 const emit = defineEmits(['login', 'register'])
 const router = useRouter()
@@ -52,48 +53,58 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
+    // ✅ 1. Login directly with Supabase
+    const { data, error: loginError } =
+      await supabase.auth.signInWithPassword({
+        email: loginForm.email,
+        password: loginForm.password,
+      })
+
+    if (loginError) throw loginError
+    if (!data.session) throw new Error('No session returned')
+
+    const token = data.session.access_token
+
+    // ✅ 2. Save token
+    localStorage.setItem('token', token)
+
+    // ✅ 3. Call backend ONLY to fetch profile
     const res = await fetch('http://localhost:3000/api/auth/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: loginForm.email,
-        password: loginForm.password
-      })
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
     })
 
-    const data = await res.json()
+    const userData = await res.json()
+    if (!res.ok) throw new Error(userData.error || 'Profile fetch failed')
 
-    if (!res.ok) {
-      throw new Error(data.message || 'Login failed')
-    }
-
-    // ✅ Save token + emit user
-    localStorage.setItem('token', data.token)
+    // ✅ Emit user
     emit('login', {
-      email: data.user.email,
-      role: data.user.role, // customer | manager | technician
-      loggedIn: true
+      email: userData.user.email,
+      role: userData.user.role,
+      loggedIn: true,
     })
 
-    console.log('✅ Backend login successful:', data.user)
-    const role = data.user.role
+    console.log('✅ Login successful:', userData.user)
+
+    // ✅ Redirect by role
+    const role = userData.user.role
 
     if (role === 'manager') {
       router.push('/manager-dashboard')
-    } 
-    else if (role === 'technician') {
+    } else if (role === 'technician') {
       router.push('/technician-dashboard')
-    } 
-    else {
-      router.push('/') // customer stays on landing page
-      }
+    } else {
+      router.push('/')
+    }
   } catch (e: any) {
     error.value = e.message || 'Login failed'
   } finally {
     loading.value = false
   }
 }
-
 // ✅ REGISTER - calls backend
 const handleRegister = async () => {
   if (registerForm.password !== registerForm.confirmPassword) {
@@ -125,14 +136,6 @@ const handleRegister = async () => {
     if (!res.ok) {
       throw new Error(data.message || 'Registration failed')
     }
-
-    // Auto-login after register
-    localStorage.setItem('token', data.token)
-    emit('login', {
-      email: data.user.email,
-      role: data.user.role,
-      loggedIn: true
-    })
 
     console.log('✅ Backend registration successful:', data.user)
     const role = data.user.role
