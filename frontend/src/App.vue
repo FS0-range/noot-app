@@ -106,6 +106,7 @@ const logout = async () => {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  
 }
 
 .page h1 {
@@ -120,13 +121,35 @@ const logout = async () => {
   margin: 0 !important;
   padding: 0 !important;
   left: 0 !important;
-  background-color: grey;
+  background-color:#0a0a0a;
 }
 
 .main-content {
-  padding: clamp(1.5rem, 4vw, 3rem);
-  margin: 0 auto;
-  max-width: 1400px;
-  min-height: calc(100vh - 80px);
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  
 }
 </style>
+<style>
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background-color: #0a0a0a;
+  color: #ffffff;
+  
+}
+
+#app {
+  background-color: #0a0a0a;
+
+}
+</style>
+
