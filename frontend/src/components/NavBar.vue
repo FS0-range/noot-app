@@ -232,7 +232,7 @@ watch(() => route.fullPath, () => {
 
 .navbar-brand {
   font-size: clamp(1.3rem, 2.5vw, 1.75rem);
-  font-weight: 300;
+  font-weight: 800;
   font-family:Georgia, 'Times New Roman', Times, serif;
   color: #eec10e !important;
   text-decoration: none !important;
