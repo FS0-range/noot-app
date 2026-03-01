@@ -124,9 +124,8 @@ const logout = async () => {
 }
 
 .main-content {
-  padding: clamp(1.5rem, 4vw, 3rem);
-  margin: 0 auto;
-  max-width: 1400px;
-  min-height: calc(100vh - 80px);
+  width: 100%;
+  padding: 0;
+  margin: 0;
 }
 </style>

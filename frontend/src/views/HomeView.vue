@@ -1,27 +1,52 @@
 <script setup lang="ts">
-// Responsive utilities
+import { ref, onMounted } from 'vue'
+
+// Staggered entrance animation state
+const visible = ref(false)
+onMounted(() => {
+  // Small tick so CSS transitions fire after mount
+  requestAnimationFrame(() => { visible.value = true })
+})
 </script>
 
 <template>
   <div class="homepage">
-    <!-- Hero Section - Fully Responsive -->
+
+    <!-- ─── HERO ─────────────────────────────────────────────── -->
     <section class="hero">
-      <div class="hero-content">
+      <!-- Background image + gradient overlay -->
+      <div class="hero-bg">
+        <img src="@/assets/hero-car.jpg" alt="Luxury car" class="hero-img" />
+        <div class="hero-overlay" />
+      </div>
+
+      <!-- Content — staggered fade-in -->
+      <div class="hero-content" :class="{ 'is-visible': visible }">
+        <p class="hero-eyebrow">Elevate Your Drive</p>
+
         <h1 class="hero-title">
-          Precision Auto Repair<br>
-          <span class="highlight">Expert Mechanics</span>
+          Expert Automotive<br>
+          <span class="hero-accent">Mastery</span>
         </h1>
+
         <p class="hero-subtitle">
-          20+ years serving Singapore. Certified repairs, fast service.
+          20+ years serving Singapore. Precision repairs, tailored upgrades,
+          and unmatched craftsmanship for your luxury vehicle.
         </p>
+
         <div class="hero-buttons">
-          <a href="#services" class="btn btn-primary">Book Now</a>
-          <a href="#contact" class="btn btn-secondary">Call Us</a>
+          <a href="#services" class="btn btn-primary">Explore Services</a>
+          <a href="#contact"  class="btn btn-primary">Contact Us</a>
         </div>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="scroll-indicator" :class="{ 'is-visible': visible }">
+        <div class="scroll-line" />
       </div>
     </section>
 
-    <!-- Services - Responsive Grid -->
+    <!-- ─── SERVICES ──────────────────────────────────────────── -->
     <section id="services" class="services-preview">
       <div class="container">
         <h2 class="section-title">Our Services</h2>
@@ -29,11 +54,11 @@
           <div class="service-card">
             <div class="service-icon">🔧</div>
             <h3>Engine Repair</h3>
-            <p>Full diagnostics & rebuilds</p>
+            <p>Full diagnostics &amp; rebuilds</p>
           </div>
           <div class="service-card">
             <div class="service-icon">🛞</div>
-            <h3>Tyre & Brake</h3>
+            <h3>Tyre &amp; Brake</h3>
             <p>Safety certified service</p>
           </div>
           <div class="service-card">
@@ -44,13 +69,13 @@
           <div class="service-card">
             <div class="service-icon">🚗</div>
             <h3>Body Work</h3>
-            <p>Dents & painting</p>
+            <p>Dents &amp; painting</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Stats - Auto Responsive -->
+    <!-- ─── STATS ─────────────────────────────────────────────── -->
     <section class="stats">
       <div class="container">
         <div class="stats-grid">
@@ -70,7 +95,7 @@
       </div>
     </section>
 
-    <!-- CTA - Mobile Optimized -->
+    <!-- ─── CTA ───────────────────────────────────────────────── -->
     <section class="cta-banner">
       <div class="container">
         <h2>Ready for Service?</h2>
@@ -78,188 +103,302 @@
         <a href="#contact" class="btn btn-primary btn-large">Get Quote</a>
       </div>
     </section>
+
   </div>
 </template>
 
 <style scoped>
+/* ─── TOKENS ──────────────────────────────────────────────── */
 :root {
-  --primary-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-  --secondary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --shadow-light: 0 5px 20px rgba(0,0,0,0.1);
-  --shadow-hover: 0 10px 40px rgba(0,0,0,0.2);
+  --gold:        #fdc601;
+  --gold-glow:   rgba(253, 198, 1, 0.55);
+  --fg:          #ffffff;
+  --fg-muted:    rgba(255,255,255,0.65);
+  --bg-dark:     #0a0a0a;
+  --shadow-sm:   0 5px 20px rgba(0,0,0,0.18);
+  --shadow-lg:   0 15px 50px rgba(0,0,0,0.35);
 }
 
+/* ─── BASE ────────────────────────────────────────────────── */
 .homepage {
-  font-family: system-ui, -apple-system, sans-serif;
-  line-height: 1.6;
-  color: #ffffff;
-  overflow-x: hidden; /* Prevents horizontal scroll */
+  font-family: 'Barlow', system-ui, sans-serif;
+  color: var(--fg);
+  overflow-x: hidden;
+  background: var(--bg-dark);
+  /* No padding here — hero must bleed to full viewport width */
+  padding: 0;
+  margin: 0;
+  width: 100%;
 }
 
 .container {
-  max-width: 1400px;
+  
   margin: 0 auto;
   padding: 0 clamp(1rem, 3vw, 2rem);
   width: 100%;
   box-sizing: border-box;
 }
 
-/* Hero - Perfect Mobile/Desktop */
+/* ─── HERO ────────────────────────────────────────────────── */
 .hero {
-  min-height: clamp(70vh, 90vw, 100vh);
-  background: var(--primary-gradient);
-  color: white;
+  position: relative;
+  min-height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: clamp(2rem, 8vw, 6rem) clamp(1rem, 5vw, 4rem);
-  position: relative;
   overflow: hidden;
 }
 
-.hero::before {
-  content: '';
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Background image — must fill hero edge-to-edge */
+.hero-bg {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-  pointer-events: none;
+  width: 100%;
+  height: 100%;
 }
 
+.hero-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Gradient overlay — matches React's from-background/60 via .../40 to-background */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 10, 10, 0.55) 0%,
+    rgba(10, 10, 10, 0.35) 45%,
+    rgba(10, 10, 10, 1.00) 100%
+  );
+}
+
+/* Content block */
 .hero-content {
-  max-width: 800px;
-  z-index: 1;
   position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 0 clamp(1.5rem, 5vw, 3rem);
+  max-width: 900px;
+  margin: 0 auto;
+
+  .&> * {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  &.is-visible > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.3s; }
+  &.is-visible > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.5s; }
+  &.is-visible > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.7s; }
+  &.is-visible > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.9s; }
 }
 
+/* Eyebrow — matches React's tracking-[0.4em] text-primary uppercase */
+.hero-eyebrow {
+  font-size: clamp(0.7rem, 1.5vw, 0.875rem);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color:#fdc601;
+  font-weight: 500;
+  margin: 0 0 1.5rem;
+}
+
+/* Title — matches React's text-5xl/7xl/8xl leading-[0.95] */
 .hero-title {
-  font-size: clamp(2rem, 8vw, 4.5rem);
-  margin: 0 0 clamp(1rem, 4vw, 2rem);
-  line-height: 1.1;
+  font-size: clamp(2.8rem, 9vw, 6.5rem);
   font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin: 0 0 2rem;
+  font-family:Georgia, 'Times New Roman', Times, serif;
+  color:#ffffff;
 }
 
-.highlight {
-  color: #ffd700;
-  text-shadow: 0 0 30px rgba(255,215,0,0.6);
+/* Gold accent word with glow — matches React's text-gold-glow */
+.hero-accent {
+  color:#fdc601;
+  text-shadow:
+    0 0 40px var(--gold-glow),
+    0 0 80px rgba(253, 198, 1, 0.25);
+  font-weight:700;
 }
 
+/* Subtitle — matches React's text-muted-foreground font-light */
 .hero-subtitle {
-  font-size: clamp(1rem, 3vw, 1.4rem);
-  margin: 0 0 clamp(2rem, 6vw, 3rem);
-  opacity: 0.95;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color:#ffffff;
+  font-weight: 300;
+  line-height: 1.75;
+  max-width: 600px;
+  margin: 0 auto 3rem;
 }
 
+/* Buttons row */
 .hero-buttons {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   align-items: center;
-  width: 100%;
+  justify-content: center;
+  color:#fdc601;
+ 
 }
 
 @media (min-width: 640px) {
-  .hero-buttons {
-    flex-direction: row;
-    justify-content: center;
-  }
+  .hero-buttons { flex-direction: row; }
 }
 
-/* Buttons */
+/* ─── BUTTONS ─────────────────────────────────────────────── */
+/* Sharp square corners matching React's rounded-none aesthetic */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(0.75rem, 2vw, 1.25rem) clamp(1.5rem, 4vw, 2.5rem);
-  border-radius: 50px;
-  text-decoration: none;
+  padding: 1rem 2.5rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  font-size: clamp(1rem, 2.5vw, 1.2rem);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: center;
-  min-height: 56px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 0;              /* sharp — no pill */
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
   box-sizing: border-box;
 }
 
+/* Filled — matches React's bg-primary text-primary-foreground */
 .btn-primary {
-  background: #ffd700;
-  color: #1e3c72;
-  box-shadow: var(--shadow-light);
+  background:transparent;
+  color:#ffffff;
+  border: 0.5px solid #ffffff;
 }
-
 .btn-primary:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: var(--shadow-hover);
+  background:#fdc601;
+  transform: translateY(-2px);
+  color:#000;
+  box-shadow: 0 8px 25px rgba(253, 198, 1, 0.35);
 }
 
-.btn-secondary {
+/* Outline — matches React's border border-foreground/30 */
+.btn-outline {
   background: transparent;
-  color: white;
-  border: 2px solid rgba(255,255,255,0.9);
+  color: var(--fg);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.btn-outline:hover {
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
-.btn-secondary:hover {
-  background: rgba(255,255,255,0.15);
+.btn-large { min-width: 200px; }
+
+/* ─── SCROLL INDICATOR ────────────────────────────────────── */
+/* Matches React's w-px h-16 gradient line + animate-pulse */
+.scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.8s ease 1.5s;
 }
 
-.btn-large {
-  min-width: 200px;
+.scroll-indicator.is-visible { opacity: 1; }
+
+.scroll-line {
+  width: 1px;
+  height: 4rem;
+  background: linear-gradient(to bottom, transparent, rgba(253,198,1,0.5), var(--gold));
+  animation: scroll-pulse 1.8s ease-in-out infinite;
 }
 
-/* Services Grid - Perfect Responsive */
+@keyframes scroll-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ─── SERVICES ────────────────────────────────────────────── */
 .services-preview {
   padding: clamp(4rem, 10vw, 8rem) 0;
-  background: #f8f9fa;
+  background: #111;
 }
 
 .section-title {
   text-align: center;
   font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
   margin-bottom: clamp(2.5rem, 6vw, 4rem);
-  color: #1e3c72;
+  color: var(--fg);
 }
 
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(clamp(250px, 25vw, 320px), 1fr));
-  gap: clamp(1.5rem, 4vw, 3rem);
+  grid-template-columns: repeat(auto-fit, minmax(clamp(220px, 22vw, 300px), 1fr));
+  gap: clamp(1.5rem, 3vw, 2rem);
 }
 
 .service-card {
-  background: white;
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.07);
   padding: clamp(2rem, 5vw, 3rem);
-  border-radius: 24px;
   text-align: center;
-  box-shadow: var(--shadow-light);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  height: 100%;
+  transition: all 0.35s ease;
 }
 
 .service-card:hover {
-  transform: translateY(-12px);
-  box-shadow: var(--shadow-hover);
+  border-color: rgba(253, 198, 1, 0.4);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  background: #1e1e1e;
 }
 
 .service-icon {
-  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-size: clamp(2.5rem, 7vw, 3.5rem);
   margin-bottom: 1.25rem;
 }
 
 .service-card h3 {
-  font-size: clamp(1.25rem, 3vw, 1.75rem);
-  margin: 0 0 1rem 0;
-  color: #1e3c72;
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.75rem;
+  color: var(--fg);
 }
 
-/* Stats - Auto Responsive */
+.service-card p {
+  color: var(--fg-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ─── STATS ───────────────────────────────────────────────── */
 .stats {
   padding: clamp(3rem, 8vw, 6rem) 0;
-  background: var(--secondary-gradient);
-  color: white;
+  background: var(--gold);
 }
 
 .stats-grid {
@@ -270,42 +409,54 @@
 }
 
 .stat-number {
-  font-size: clamp(2rem, 8vw, 4rem);
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
   font-weight: 800;
-  margin-bottom: 0.75rem;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  color: #000;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.03em;
 }
 
-/* CTA - Mobile Perfect */
+.stat p {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.65);
+  margin: 0;
+}
+
+/* ─── CTA ─────────────────────────────────────────────────── */
 .cta-banner {
-  padding: clamp(3rem, 8vw, 6rem) 0;
-  background: #1e3c72;
-  color: white;
+  padding: clamp(4rem, 10vw, 8rem) 0;
+  background: #0a0a0a;
   text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.06);
 }
 
 .cta-banner h2 {
-  font-size: clamp(2rem, 6vw, 3rem);
-  margin-bottom: 1.25rem;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  color: var(--fg);
 }
 
-/* Universal Mobile Fixes */
+.cta-banner p {
+  color: var(--fg-muted);
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 2.5rem;
+}
+
+/* ─── MOBILE ──────────────────────────────────────────────── */
 @media (max-width: 480px) {
-  .container {
-    padding: 0 1rem;
-  }
-  
-  .hero-buttons .btn {
-    width: 100%;
-    max-width: 300px;
-  }
+  .container { padding: 0 1rem; }
+  .hero-buttons .btn { width: 100%; max-width: 300px; }
 }
 
-/* Landscape Mobile */
 @media (max-height: 500px) and (orientation: landscape) {
-  .hero {
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
+  .hero { min-height: 100vh; padding: 2rem 1rem; }
 }
 </style>
