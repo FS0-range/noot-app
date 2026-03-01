@@ -1,11 +1,12 @@
 /* ── Container ── */
-.tech-container { padding: 2rem; max-width: 1000px; margin: 0 auto; }
+.tech-container { padding: 2rem; max-width: 1000px; margin: 0 auto; font-family:Georgia, 'Times New Roman', Times, serif; }
 
 /* ── Header ── */
 .tech-header {
   background: #1c1c1c; border: 1px solid #2e2e2e; border-radius: 10px;
-  padding: 1.5rem 2rem; margin-bottom: 1.5rem;
+  padding: 1.5rem 2rem; margin-bottom: 1.5rem; margin-top:4rem;
   display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+
 }
 .tech-header-left { display: flex; align-items: center; gap: 1rem; }
 .tech-avatar {

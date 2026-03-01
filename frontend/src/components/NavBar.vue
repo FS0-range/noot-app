@@ -364,7 +364,7 @@ watch(() => route.fullPath, () => {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  background: transparent;
+  background:#fdc601;
   color: rgba(0,0,0,0.7) !important;
   border: 2px solid rgba(0,0,0,0.4);
   cursor: pointer;
@@ -388,7 +388,7 @@ watch(() => route.fullPath, () => {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  background: rgba(255,255,255,0.25);
+  background:#fdc601;
   color: #000 !important;
   border: 2px solid rgba(0,0,0,0.5);
   text-decoration: none;
@@ -399,10 +399,10 @@ watch(() => route.fullPath, () => {
 }
 
 .btn-profile:hover {
-  background: rgba(255,255,255,0.45);
-  border-color: #000;
+  background: transparent;
+  border-color:#fdc601;
   text-decoration: none;
-  color: #000 !important;
+  color:#fdc601 !important;
 }
 
 .profile-icon {
