@@ -240,6 +240,7 @@ const handleRegister = async () => {
   max-width: 400px;
   margin: 2rem auto;
   padding: 0 1rem;
+  font-family:Georgia, 'Times New Roman', Times, serif;
 }
 
 .login-form {
@@ -268,10 +269,16 @@ const handleRegister = async () => {
 }
 
 .mode-toggle button.active {
-  background: #007bff;
-  color: white;
+  background:#fdc601;
+  color:black;
+  border: 0.5px solid #bdb9b9;
 }
 
+.mode-toggle button:hover {
+  background:white;
+  color:black;
+  border: 0.5px solid #fdc601;
+}
 .role-group {
   margin-bottom: 1.5rem;
 }
@@ -326,8 +333,9 @@ const handleRegister = async () => {
 
 .form-group input:focus {
   outline: none;
-  border-color: #007bff;
+  border-color: #fdc601;
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  color:#333;
 }
 
 .form-group input:disabled {
@@ -347,10 +355,9 @@ const handleRegister = async () => {
 .submit-btn {
   width: 100%;
   padding: 0.875rem;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  background:#fdc601;
+  color:black;
+  border: 0.5px solid #bdb9b9;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -358,7 +365,8 @@ const handleRegister = async () => {
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: #0056b3;
+  background: white;
+  border: 0.5px solid #fdc601;
 }
 
 .submit-btn:disabled {
