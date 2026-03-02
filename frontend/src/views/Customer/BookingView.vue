@@ -1,6 +1,6 @@
 <template>
   <div class="page booking">
-    <h1>📅 Book Appointment</h1>
+    <h1>Book An Appointment with us!</h1>
     <form class="booking-form" @submit.prevent="handleSubmit">
       <div class="form-group">
         <label for="license-plate">Vehicle License Plate</label>
