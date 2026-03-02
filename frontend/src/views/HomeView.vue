@@ -134,7 +134,6 @@ const serviceItems = [
       <div class="cta-inner" ref="ctaRef" :class="{ 'is-visible': ctaVisible }">
         <p class="cta-eyebrow">Ready to Start?</p>
         <h2 class="cta-title">Book Your Service</h2>
-        <p class="cta-offer">20% off your first visit • Complimentary vehicle inspection</p>
         <p class="cta-sub">Experience excellence with Porschify's tailored automotive care.</p>
         <a href="#contact" class="cta-btn">Get a Quote</a>
       </div>
@@ -502,18 +501,12 @@ const serviceItems = [
   margin: 0 0 1.5rem;
 }
 
-.cta-offer {
-  color:#bdb9b9;
-  font-size: clamp(1rem, 2vw, 1.125rem);
-  font-weight: 300;
-  margin: 0 0 1rem;
-}
-
 .cta-sub {
   color:#bdb9b9;
-  font-size: 0.95rem;
+  font-size: 1.3rem;
   font-weight: 400;
   margin: 0 0 2.5rem;
+  font-family:Georgia, 'Times New Roman', Times, serif;
 }
 
 /* CTA button — sharp, gold fill, uppercase tracking */
