@@ -51,7 +51,7 @@ const routes = [
     component: () => import('../views/Manager/ManagerAppointments.vue'), // CREATE THIS
   },
   {
-    path: '/manager-reports',
+    path: '/managerReports',
     name: 'managerReports',
     meta: { requiresAuth: true, roles: ['manager'] },
     component: () => import('../views/ManagerReports.vue'), // CREATE THIS
