@@ -8,7 +8,7 @@
     <section class="reports-search-panel">
       <div class="top-row-reports-section">
         <div class="reports-section">
-          <div class="reports-section-title">Select Record Type</div>
+          <div class="reports-section-title">Select Record Type <span style="color:orangered">*</span> </div>
           <div class="reports-controls record-type-row">
             <button type="button" class="record-type-btn" :class="{ active: filters.type === 'appointments' }"
               @click="setType('appointments')">
