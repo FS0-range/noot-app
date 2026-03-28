@@ -54,7 +54,7 @@ const routes = [
     path: '/managerReports',
     name: 'managerReports',
     meta: { requiresAuth: true, roles: ['manager'] },
-    component: () => import('../views/ManagerReports.vue'), // CREATE THIS
+    component: () => import('../views/Manager/ManagerReports.vue'), // CREATE THIS
   },
   {
     path: '/jobCards',
