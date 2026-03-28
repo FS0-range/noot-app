@@ -61,6 +61,7 @@ module.exports = (supabase) => {
             Email
           )
         `, { count: 'exact' })
+        .order('Order_ID', { ascending: true })
         .range(from, to)
 
       if (error) return res.status(500).json({ error: error.message })

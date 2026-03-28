@@ -72,8 +72,8 @@
         <button class="search-btn"
           @click="filters.type === 'appointments' ? fetchAppointments() : fetchJobOrders()">Search</button>
         <div v-if="filteredRecords.length >= 0" class="appt-count">
-          {{ filteredRecords.length }}/100 completed {{ filters.type === 'appointments' ? 'appointment' : 'job order' }}
-          record{{ filteredRecords.length === 1 ? '' : 's' }}.
+          {{ filteredRecords.length }} completed {{ filters.type === 'appointments' ? 'appointment' : 'job order' }}
+          record{{ filteredRecords.length === 1 ? '' : 's' }}. (Only gets first 100 records from DB, NEED TO UPDATE API ROUTES)
         </div>
       </div>
     </section>
@@ -411,7 +411,6 @@ export default {
               item.appointment?.vehicle_license_plate || '',
             assignedTechnician:
               item.ServiceTechnicianProfile?.Name ||
-              item.appointment?.DiagnoseTechnicianProfile?.Name ||
               '',
             recordId: item.Order_ID
           },
@@ -544,9 +543,11 @@ export default {
 
     async fetchJobOrders() {
       this.searchBtnClicked = true;
+      this.pageLoading = true;
+      this.jobOrdersError = null;
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        const token = session?.access_token
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('Not authenticated. Please log in again.');
 
         const res = await fetch('http://localhost:3000/api/manager/jobCards?limit=100&page=1', {
           headers: {
@@ -555,6 +556,7 @@ export default {
         })
 
         const result = await res.json()
+        console.log(JSON.stringify(result.data?.[0], null, 2))
 
         if (!res.ok) {
           throw new Error(result.error || result.message || 'Failed to fetch job orders')
@@ -565,6 +567,8 @@ export default {
       } catch (err) {
         console.error('Fetch job orders error:', err)
         this.jobOrders = []
+      } finally {
+        this.pageLoading = false;
       }
     },
 
