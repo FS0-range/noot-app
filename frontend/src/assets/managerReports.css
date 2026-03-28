@@ -45,6 +45,15 @@
   gap: 1.25rem;
 }
 
+.top-row-reports-section {
+  display: flex;
+  margin-bottom: 2rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
 .reports-section {
   display: flex;
   flex-direction: column;
@@ -106,7 +115,7 @@
 }
 
 .additional-filters-empty {
-  padding: 1rem;
+  padding: 0.75rem;
   border: 1px dashed #3b3b3b;
   border-radius: 12px;
   color: #9ca3af;
@@ -172,14 +181,13 @@
   box-shadow: 0 0 0 3px rgba(245, 197, 66, 0.12);
 }
 
+.additional-filter-select {
+  appearance: none;
+}
+
 .date-input::-webkit-calendar-picker-indicator {
   filter: invert(0.7);
   cursor: pointer;
-}
-
-.additional-filter-select,
-::picker(select) {
-  appearance: base-select;
 }
 
 .remove-filter-btn {
@@ -504,7 +512,7 @@
   }
 }
 
- .loading-state {
+.loading-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -526,5 +534,7 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

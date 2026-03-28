@@ -6,35 +6,36 @@
     </div>
 
     <section class="reports-search-panel">
-      <div class="reports-section">
-        <div class="reports-section-title">Select Record Type</div>
-        <div class="record-type-row">
-          <button type="button" class="record-type-btn" :class="{ active: filters.type === 'appointments' }"
-            @click="setType('appointments')">
-            Appointments
-          </button>
-          <button type="button" class="record-type-btn" :class="{ active: filters.type === 'jobOrders' }"
-            @click="setType('jobOrders')">
-            Job Orders
-          </button>
-        </div>
-      </div>
-
-      <div class="reports-section">
-        <div class="reports-section-title">Date Range</div>
-        <div class="date-range-row">
-          <div class="date-field-group">
-            <label class="field-label" for="fromDate">From</label>
-            <input id="fromDate" v-model="filters.dateFrom" type="date" class="date-input report-input" />
-          </div>
-
-          <div class="date-field-group">
-            <label class="field-label" for="toDate">To</label>
-            <input id="toDate" v-model="filters.dateTo" type="date" class="date-input report-input" />
+      <div class="top-row-reports-section">
+        <div class="reports-section">
+          <div class="reports-section-title">Select Record Type</div>
+          <div class="reports-controls record-type-row">
+            <button type="button" class="record-type-btn" :class="{ active: filters.type === 'appointments' }"
+              @click="setType('appointments')">
+              Appointments
+            </button>
+            <button type="button" class="record-type-btn" :class="{ active: filters.type === 'jobOrders' }"
+              @click="setType('jobOrders')">
+              Job Orders
+            </button>
           </div>
         </div>
-      </div>
 
+        <div class="reports-section">
+          <div class="reports-section-title">Date Range</div>
+          <div class="date-range-row">
+            <div class="reports-controls date-field-group">
+              <label class="field-label" for="fromDate">From</label>
+              <input id="fromDate" v-model="filters.dateFrom" type="date" class="date-input report-input" />
+            </div>
+
+            <div class="date-field-group">
+              <label class="field-label" for="toDate">To</label>
+              <input id="toDate" v-model="filters.dateTo" type="date" class="date-input report-input" />
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="reports-section">
         <div class="additional-filters-header">
           <div class="reports-section-title">Additional Filters</div>
@@ -68,15 +69,18 @@
       </div>
 
       <div class="reports-summary-row">
-        <button class="search-btn">Search</button>
+        <button class="search-btn"
+          @click="filters.type === 'appointments' ? fetchAppointments() : fetchJobOrders()">Search</button>
         <div v-if="filteredRecords.length >= 0" class="appt-count">
-          {{ filteredRecords.length }} completed {{ filters.type === 'appointments' ? 'appointment' : 'job order' }}
-          record{{ filteredRecords.length === 1 ? '' : 's' }}
+          {{ filteredRecords.length }}/100 completed {{ filters.type === 'appointments' ? 'appointment' : 'job order' }}
+          record{{ filteredRecords.length === 1 ? '' : 's' }}.
         </div>
       </div>
     </section>
 
-    <div v-if="pageLoading" class="loading-state">
+    <div v-if="!searchBtnClicked"></div>
+
+    <div v-else-if="pageLoading" class="loading-state">
       <span class="loading-spinner"></span>
       <p>Loading records...</p>
     </div>
@@ -140,9 +144,169 @@
         <h2>{{ selectedRecord.title }}</h2>
 
         <div class="modal-body">
-          <div class="detail-group" v-for="detail in selectedRecord.details" :key="detail.label">
-            <label>{{ detail.label }}</label>
-            <p>{{ detail.value || '-' }}</p>
+          <div v-if="selectedRecord" class="modal-overlay" @click.self="closeRecord">
+            <div class="modal-content">
+              <button class="modal-close" @click="closeRecord">×</button>
+
+              <h2>
+                {{ selectedRecord.recordType === 'Appointment' ? 'Appointment Details' : 'Job Order Details' }}
+              </h2>
+
+              <div class="modal-body">
+                <template v-if="selectedRecord.recordType === 'Appointment'">
+                  <div class="detail-group">
+                    <label>Customer</label>
+                    <p>{{ selectedRecord.customerName || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Customer Email</label>
+                    <p>{{ selectedRecord.customerEmail || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Phone Number</label>
+                    <p>{{ selectedRecord.phoneNumber || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Vehicle</label>
+                    <p>{{ selectedRecord.vehicle || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>License Plate</label>
+                    <p>{{ selectedRecord.licensePlate || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Appointment Date</label>
+                    <p>{{ formatDate(selectedRecord.appointmentDate) || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Time</label>
+                    <p>{{ formatTime(selectedRecord.appointmentTime) || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Duration</label>
+                    <p>{{ selectedRecord.duration || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Status</label>
+                    <p>{{ selectedRecord.status || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group" v-if="selectedRecord.status !== 'cancelled'">
+                    <label>Diagnose Technician</label>
+                    <p>{{ selectedRecord.diagnoseTech || 'Not Assigned' }}</p>
+                  </div>
+
+                  <div class="detail-group" v-if="selectedRecord.status !== 'cancelled'">
+                    <label>Technician Email</label>
+                    <p>{{ selectedRecord.techEmail || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group" v-if="selectedRecord.cancelReason">
+                    <label>Cancellation Reason</label>
+                    <p>{{ selectedRecord.cancelReason }}</p>
+                  </div>
+
+                  <div class="detail-group" v-if="selectedRecord.notes">
+                    <label>Notes</label>
+                    <p>{{ selectedRecord.notes }}</p>
+                  </div>
+                </template>
+
+                <template v-else>
+                  <div class="detail-group">
+                    <label>Job Order ID</label>
+                    <p>{{ selectedRecord.orderId || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Status</label>
+                    <p>{{ selectedRecord.status || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Customer</label>
+                    <p>{{ selectedRecord.customerName || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Customer Email</label>
+                    <p>{{ selectedRecord.customerEmail || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Vehicle</label>
+                    <p>{{ selectedRecord.vehicle || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>License Plate</label>
+                    <p>{{ selectedRecord.licensePlate || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Diagnose Technician</label>
+                    <p>{{ selectedRecord.diagnoseTech || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Service Technician</label>
+                    <p>{{ selectedRecord.serviceTech || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Services</label>
+                    <p>{{ selectedRecord.services || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Parts</label>
+                    <p>{{ selectedRecord.parts || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Quotation</label>
+                    <p>{{ selectedRecord.quotation || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Diagnosis</label>
+                    <p>{{ selectedRecord.diagnosis || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Waiting For Parts</label>
+                    <p>{{ selectedRecord.waitingForParts || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Ready</label>
+                    <p>{{ selectedRecord.ready || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Service Date</label>
+                    <p>{{ formatDate(selectedRecord.serviceDate) || '-' }}</p>
+                  </div>
+
+                  <div class="detail-group">
+                    <label>Check Out</label>
+                    <p>{{ formatDate(selectedRecord.checkOut) || '-' }}</p>
+                  </div>
+                </template>
+              </div>
+
+              <div class="modal-actions">
+                <button class="btn-secondary" @click="closeRecord">Close</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -156,6 +320,7 @@
 </template>
 
 <script>
+import { supabase } from '@/supabase.js'
 import '@/assets/managerReports.css'
 
 const PAGE_SIZE = 8
@@ -166,6 +331,7 @@ export default {
 
   data() {
     return {
+      searchBtnClicked: false,
       filters: {
         type: 'appointments',
         dateFrom: '',
@@ -177,67 +343,10 @@ export default {
       pageLoading: false,
 
       // Integrate with Supabase
-      appointments: [
-        {
-          id: 101,
-          appointment_date: '2026-03-15',
-          appointment_time: '09:00:00',
-          customer_id: 'CUS-001',
-          customer_name: 'Daryl Tan',
-          technician_id: 'TECH-002',
-          technician_name: 'Marcus Lee',
-          customer_notes: 'Rattling sound when accelerating',
-          status: 'completed',
-          vehicle_license_plate: 'SGB1234A',
-          vehicle_make: 'Toyota Corolla',
-          phone_number: '91234567'
-        },
-        {
-          id: 103,
-          appointment_date: '2026-03-18',
-          appointment_time: '11:00:00',
-          customer_id: 'CUS-003',
-          customer_name: 'Rachel Ng',
-          technician_id: 'TECH-003',
-          technician_name: 'Jared Lim',
-          customer_notes: 'Routine servicing',
-          status: 'completed',
-          vehicle_license_plate: 'SKM9090P',
-          vehicle_make: 'Mazda 3',
-          phone_number: '83456789'
-        }
-      ],
-
-      jobOrders: [
-        {
-          Order_ID: 'JO-3002',
-          Order_Status: 'completed',
-          Services: 'Brake pad replacement',
-          Parts: 'Front brake pads',
-          Service: '2026-03-12',
-          Check_Out: '2026-03-13',
-          Customer_id: 'CUS-003',
-          customer_name: 'Rachel Ng',
-          service_technician_name: 'Jared Lim',
-          diagnose_technician_name: 'Jared Lim',
-          vehicle_license_plate: 'SKM9090P',
-          vehicle_name: 'Mazda 3'
-        },
-        {
-          Order_ID: 'JO-3005',
-          Order_Status: 'completed',
-          Services: 'Battery replacement',
-          Parts: 'Battery terminal kit',
-          Service: '2026-03-20',
-          Check_Out: '2026-03-21',
-          Customer_id: 'CUS-001',
-          customer_name: 'Daryl Tan',
-          service_technician_name: 'Aaron Goh',
-          diagnose_technician_name: 'Marcus Lee',
-          vehicle_license_plate: 'SGB1234A',
-          vehicle_name: 'Toyota Corolla'
-        }
-      ]
+      appointments: [],
+      appointmentsError: null,
+      jobOrders: [],
+      jobOrdersError: null,
     }
   },
 
@@ -246,87 +355,95 @@ export default {
       return this.appointments
         .filter((item) => item.status === 'completed')
         .map((item) => ({
-          key: 'appointment-' + item.id,
-          type: 'appointments',
+          key: 'APT-' + item.id,
+          type: 'appointment',
           typeLabel: 'Appointment',
-          title: item.customer_name || 'Appointment Record',
-          subtitle: (item.vehicle_make || 'Vehicle') + ' · ' + (item.vehicle_license_plate || 'No Plate'),
-          idLabel: 'APT-' + item.id,
-          status: item.status,
-          statusClass: 'status-badge--completed',
-          cardClass: 'card--completed',
-          timeClass: 'time-col--completed',
-          leftValue: this.formatTime(item.appointment_time),
-          dateValue: item.appointment_date,
+          idLabel: item.id,
+          dateValue: item.appointmentDate,
+
           filterValues: {
-            customerName: item.customer_name || '',
-            vehicleName: item.vehicle_make || '',
-            licensePlate: item.vehicle_license_plate || '',
-            assignedTechnician: item.technician_name || '',
-            recordId: 'APT-' + item.id
+            customerName: item.customerName || '',
+            vehicleName: [item.vehicleYear, item.vehicleMake, item.vehicleModel].filter(Boolean).join(' '),
+            licensePlate: item.licensePlate || '',
+            assignedTechnician: item.diagnoseTech || '',
+            recordId: item.id
           },
-          meta: [
-            { label: 'Date', value: this.formatDate(item.appointment_date), className: 'date-tag' },
-            { label: 'License Plate', value: item.vehicle_license_plate, className: 'duration-tag' },
-            { label: 'Technician', value: item.technician_name || 'Unassigned', className: 'date-tag' }
-          ],
-          details: [
-            { label: 'Record Type', value: 'Appointment' },
-            { label: 'Appointment ID', value: 'APT-' + item.id },
-            { label: 'Status', value: 'Completed' },
-            { label: 'Date', value: this.formatDate(item.appointment_date) },
-            { label: 'Time', value: this.formatTime(item.appointment_time) },
-            { label: 'Customer', value: item.customer_name },
-            { label: 'Customer ID', value: item.customer_id },
-            { label: 'Vehicle Name', value: item.vehicle_make },
-            { label: 'Vehicle Plate', value: item.vehicle_license_plate },
-            { label: 'Assigned Technician', value: item.technician_name },
-            { label: 'Notes', value: item.customer_notes }
-          ]
+
+          modalData: {
+            recordType: 'Appointment',
+            id: item.id,
+            customerName: item.customerName,
+            customerEmail: item.customerEmail,
+            phoneNumber: item.phoneNumber,
+            vehicle: [item.vehicleYear, item.vehicleMake, item.vehicleModel].filter(Boolean).join(' '),
+            licensePlate: item.licensePlate,
+            appointmentDate: item.appointmentDate,
+            appointmentTime: item.appointmentTime,
+            duration: item.duration,
+            status: item.status,
+            diagnoseTech: item.diagnoseTech,
+            techEmail: item.techEmail,
+            cancelReason: item.cancelReason,
+            notes: item.notes
+          }
         }))
     },
 
     jobOrderRecords() {
       return this.jobOrders
-        .filter((item) => item.Order_Status === 'completed')
+        .filter((item) => item.Order_Status === 'Check Out')
         .map((item) => ({
-          key: 'joborder-' + item.Order_ID,
+          key: 'JOB-' + item.Order_ID,
           type: 'jobOrders',
           typeLabel: 'Job Order',
-          title: item.customer_name || item.Order_ID,
-          subtitle: (item.vehicle_name || item.vehicle_license_plate || 'Vehicle') + ' · ' + (item.Services || 'No service listed'),
           idLabel: item.Order_ID,
-          status: item.Order_Status,
-          statusClass: 'status-badge--completed',
-          cardClass: 'card--completed',
-          timeClass: 'time-col--completed',
-          leftValue: item.Order_ID,
           dateValue: item.Check_Out || item.Service,
+
           filterValues: {
-            customerName: item.customer_name || '',
-            vehicleName: item.vehicle_name || '',
-            licensePlate: item.vehicle_license_plate || '',
-            assignedTechnician: item.service_technician_name || item.diagnose_technician_name || '',
+            customerName:
+              item.appointment?.CustomerProfile?.Name || '',
+            vehicleName: [
+              item.appointment?.vehicle_year,
+              item.appointment?.vehicle_make,
+              item.appointment?.vehicle_model
+            ].filter(Boolean).join(' '),
+            licensePlate:
+              item.appointment?.vehicle_license_plate || '',
+            assignedTechnician:
+              item.ServiceTechnicianProfile?.Name ||
+              item.appointment?.DiagnoseTechnicianProfile?.Name ||
+              '',
             recordId: item.Order_ID
           },
-          meta: [
-            { label: 'Completed On', value: this.formatDate(item.Check_Out || item.Service), className: 'date-tag' },
-            { label: 'License Plate', value: item.vehicle_license_plate, className: 'duration-tag' },
-            { label: 'Technician', value: item.service_technician_name || item.diagnose_technician_name, className: 'date-tag' }
-          ],
-          details: [
-            { label: 'Record Type', value: 'Job Order' },
-            { label: 'Job Order ID', value: item.Order_ID },
-            { label: 'Status', value: 'Completed' },
-            { label: 'Customer', value: item.customer_name },
-            { label: 'Customer ID', value: item.Customer_id },
-            { label: 'Vehicle Name', value: item.vehicle_name },
-            { label: 'Vehicle Plate', value: item.vehicle_license_plate },
-            { label: 'Assigned Technician', value: item.service_technician_name || item.diagnose_technician_name },
-            { label: 'Services', value: item.Services },
-            { label: 'Parts', value: item.Parts },
-            { label: 'Completed On', value: this.formatDate(item.Check_Out || item.Service) }
-          ]
+
+          modalData: {
+            recordType: 'Job Order',
+            orderId: item.Order_ID,
+            status: item.Order_Status,
+            customerName:
+              item.appointment?.CustomerProfile?.Name || '',
+            customerEmail:
+              item.appointment?.CustomerProfile?.Email || '',
+            vehicle: [
+              item.appointment?.vehicle_year,
+              item.appointment?.vehicle_make,
+              item.appointment?.vehicle_model
+            ].filter(Boolean).join(' '),
+            licensePlate:
+              item.appointment?.vehicle_license_plate || '',
+            diagnoseTech:
+              item.appointment?.DiagnoseTechnicianProfile?.Name || '',
+            serviceTech:
+              item.ServiceTechnicianProfile?.Name || '',
+            services: item.Services,
+            parts: item.Parts,
+            quotation: item.Quotation,
+            diagnosis: item.Diagnose,
+            waitingForParts: item.Waiting_For_Parts,
+            ready: item.Ready,
+            serviceDate: item.Service,
+            checkOut: item.Check_Out
+          }
         }))
     },
 
@@ -381,6 +498,76 @@ export default {
   },
 
   methods: {
+
+    async fetchAppointments() {
+      this.searchBtnClicked = true;
+      this.pageLoading = true;
+      this.appointmentsError = null;
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('Not authenticated. Please log in again.');
+        const res = await fetch('http://localhost:3000/api/manager/getAllAppointments', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || json.message || `Server error ${res.status}`);
+        this.appointments = (json.data || []).map(a => ({
+          id: a.id,
+          customerId: a.Profiles?.ID || '',
+          customerName: a.Profiles?.Name || '',
+          customerEmail: a.Profiles?.Email || '',
+          phoneNumber: a.phone_number || '',
+          licensePlate: a.vehicle_license_plate || '',
+          vehicleMake: a.vehicle_make || '',
+          vehicleModel: a.vehicle_model || '',
+          vehicleYear: a.vehicle_year || '',
+          appointmentDate: a.appointment_date || '',
+          appointmentTime: a.appointment_time || '',
+          duration: a.duration || '',
+          status: a.status || '',
+          diagnoseTech: a.TechnicianProfile?.Name || '',
+          diagnoseTechId: a.TechnicianProfile?.ID || '',
+          techEmail: a.TechnicianProfile?.Email || '',
+          cancelReason: a.cancel_reason || null,
+          notes: a.customer_notes || null,
+        }));
+      } catch (err) {
+        console.error('Error fetching appointments:', err);
+        this.appointmentsError = err.message;
+      } finally {
+        this.pageLoading = false;
+      }
+    },
+
+    async fetchJobOrders() {
+      this.searchBtnClicked = true;
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        const token = session?.access_token
+
+        const res = await fetch('http://localhost:3000/api/manager/jobCards?limit=100&page=1', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+
+        const result = await res.json()
+
+        if (!res.ok) {
+          throw new Error(result.error || result.message || 'Failed to fetch job orders')
+        }
+
+        this.jobOrders = result.data || []
+        
+      } catch (err) {
+        console.error('Fetch job orders error:', err)
+        this.jobOrders = []
+      }
+    },
+
     setType(value) {
       this.filters.type = value
     },
@@ -412,7 +599,7 @@ export default {
     },
 
     openRecord(record) {
-      this.selectedRecord = record
+      this.selectedRecord = record.modalData
     },
 
     closeRecord() {
