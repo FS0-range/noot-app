@@ -36,30 +36,28 @@
 
       <!-- Filter Bar -->
       <div class="filter-bar">
-        <template v-if="activeStatusTab === 'active'">
-          <button
-            v-for="f in filters"
-            :key="f.value"
-            class="filter-btn"
-            :class="{ active: activeFilter === f.value && !specificDate }"
-            @click="setFilter(f.value)"
-          >
-            {{ f.label }}
-          </button>
+        <button
+          v-for="f in filters"
+          :key="f.value"
+          class="filter-btn"
+          :class="{ active: activeFilter === f.value && !specificDate }"
+          @click="setFilter(f.value)"
+        >
+          {{ f.label }}
+        </button>
 
-          <div class="date-filter">
-            <input
-              type="date"
-              class="date-input"
-              :class="{ active: specificDate }"
-              v-model="specificDate"
-              @change="onDateChange"
-            />
-            <button v-if="specificDate" class="clear-date" @click="clearDate">✕</button>
-          </div>
-        </template>
+        <div class="date-filter">
+          <input
+            type="date"
+            class="date-input"
+            :class="{ active: specificDate }"
+            v-model="specificDate"
+            @change="onDateChange"
+          />
+          <button v-if="specificDate" class="clear-date" @click="clearDate">✕</button>
+        </div>
 
-        <div class="search-filter" :class="{ 'search-filter--full': activeStatusTab !== 'active' }">
+        <div class="search-filter">          
           <span class="search-icon">🔍</span>
           <input
             type="text"
@@ -434,17 +432,26 @@ export default {
     todayStr() {
       return new Date().toISOString().split('T')[0];
     },
+    startOfWeekStr() {
+      const today = new Date();
+      const start = new Date(today);
+      start.setDate(today.getDate() - today.getDay());
+      return start.toISOString().split('T')[0];
+    },
     endOfWeekStr() {
       const today = new Date();
       const end = new Date(today);
       end.setDate(today.getDate() + (6 - today.getDay()));
       return end.toISOString().split('T')[0];
     },
+    startOfMonthStr() {
+      const today = new Date();
+      return new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+    },
     endOfMonthStr() {
       const today = new Date();
       return new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
     },
-
     activeAppointments() {
       return this.appointments.filter(a => a.status === 'appointment' || a.status === 'booked');
     },
@@ -470,16 +477,14 @@ export default {
         list = list.filter(a => a.customerName.toLowerCase().includes(query));
       }
 
-      if (this.activeStatusTab === 'active') {
-        if (this.specificDate) {
-          list = list.filter(a => a.appointmentDate === this.specificDate);
-        } else if (this.activeFilter === 'today') {
-          list = list.filter(a => a.appointmentDate === this.todayStr);
-        } else if (this.activeFilter === 'week') {
-          list = list.filter(a => a.appointmentDate >= this.todayStr && a.appointmentDate <= this.endOfWeekStr);
-        } else if (this.activeFilter === 'month') {
-          list = list.filter(a => a.appointmentDate >= this.todayStr && a.appointmentDate <= this.endOfMonthStr);
-        }
+      if (this.specificDate) {
+        list = list.filter(a => a.appointmentDate === this.specificDate);
+      } else if (this.activeFilter === 'today') {
+        list = list.filter(a => a.appointmentDate === this.todayStr);
+      } else if (this.activeFilter === 'week') {
+        list = list.filter(a => a.appointmentDate >= this.startOfWeekStr && a.appointmentDate <= this.endOfWeekStr);
+      } else if (this.activeFilter === 'month') {
+        list = list.filter(a => a.appointmentDate >= this.startOfMonthStr && a.appointmentDate <= this.endOfMonthStr);
       }
 
       return [...list].sort((a, b) =>
@@ -772,6 +777,8 @@ export default {
       this.activeStatusTab = val;
       this.currentPage = 1;
       this.customerSearch = '';
+      this.specificDate = '';
+      this.activeFilter = 'all';
     },
     isToday(date) { return date === this.todayStr; },
     isPast(date, time) {
