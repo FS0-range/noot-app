@@ -624,15 +624,12 @@ export default {
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || json.message || `Error ${res.status}`);
 
-        // 2) Call your existing email/status endpoint
-        const statusRes = await fetch(`http://localhost:3000/api/appointments/${appt.id}/status`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ status: 'completed', customerEmail: appt.customerEmail , customerName: appt.customerName}),
-        });
+        // 2) Reuse the existing function to update status + send email
+        await this.notifyAppointmentStatusUpdate(
+          appt.id,
+          'in diagnosis',
+          appt.customerEmail
+        );
 
         const statusJson = await statusRes.json();
         if (!statusRes.ok) {

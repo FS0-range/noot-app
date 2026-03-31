@@ -696,6 +696,13 @@ export default {
       // Update local first
       this.partsArrivalModal.job.partsArrivalDate = this.partsArrivalModal.date;
       this.partsArrivalModal.job.status = 'waiting-for-parts';
+
+      await this.notifyJobCardStatusUpdate(
+        this.partsArrivalModal.job.id,
+        'waiting for parts',
+        this.partsArrivalModal.job.customerEmail || ''
+      );
+
       this.closePartsArrivalModal();
     },
 
