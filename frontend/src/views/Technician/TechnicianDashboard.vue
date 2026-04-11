@@ -43,7 +43,7 @@
       </div>
     </section>
 
-    <!-- ══════════════════ ROW 1: Status Donut + Role Split ══════════════════ -->
+    <!-- ══════════════════ ROW 1: Status Donut + Upcoming Jobs ══════════════════ -->
     <section class="dashboard-section">
       <div class="dashboard-grid dashboard-grid--2col">
 
@@ -118,7 +118,35 @@
 
     </section>
 
-    <!-- ══════════════════ ROW 2: Top Services + Top Vehicle Makes ══════════════════ -->
+    <!-- ══════════════════ ROW 2: Waiting for Parts table ══════════════════ -->
+    <section class="dashboard-section">
+      <div class="dashboard-card">
+        <div class="dashboard-card-title">Jobs Waiting for Parts</div>
+        <div v-if="jobsLoading" class="dashboard-loading">Loading...</div>
+        <div v-else-if="waitingJobs.length === 0" class="dashboard-empty">No jobs currently waiting for parts.</div>
+        <div v-else class="parts-table">
+          <div class="parts-table-header">
+            <span>Order ID</span>
+            <span>Plate</span>
+            <span>Make / Year</span>
+            <span>Services</span>
+            <span>Expected Arrival</span>
+          </div>
+          <div v-for="(job, i) in waitingJobs" :key="i" class="parts-table-row">
+            <span class="parts-id">{{ shortId(job.Order_ID) }}</span>
+            <span class="parts-plate">{{ job.appointment?.vehicle_license_plate || '—' }}</span>
+            <span class="parts-make">{{ job.appointment?.vehicle_make || '—' }} {{ job.appointment?.vehicle_year || '' }}</span>
+            <span class="parts-services">{{ formatServices(job.Services) }}</span>
+            <span class="parts-arrival"
+              :class="{ 'parts-arrival--overdue': isOverdue(job.expected_parts_arrival_date) }">
+              {{ formatDate(job.expected_parts_arrival_date) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════ ROW 3: Top Services + Top Vehicle Makes ══════════════════ -->
     <section class="dashboard-section">
       <div class="dashboard-grid dashboard-grid--2col">
 
@@ -155,34 +183,7 @@
       </div>
     </section>
 
-    <!-- ══════════════════ ROW 3: Waiting for Parts table ══════════════════ -->
-    <section class="dashboard-section">
-      <div class="dashboard-card">
-        <div class="dashboard-card-title">Jobs Waiting for Parts</div>
-        <div v-if="jobsLoading" class="dashboard-loading">Loading...</div>
-        <div v-else-if="waitingJobs.length === 0" class="dashboard-empty">No jobs currently waiting for parts.</div>
-        <div v-else class="parts-table">
-          <div class="parts-table-header">
-            <span>Order ID</span>
-            <span>Plate</span>
-            <span>Make / Year</span>
-            <span>Services</span>
-            <span>Expected Arrival</span>
-          </div>
-          <div v-for="(job, i) in waitingJobs" :key="i" class="parts-table-row">
-            <span class="parts-id">{{ shortId(job.Order_ID) }}</span>
-            <span class="parts-plate">{{ job.appointment?.vehicle_license_plate || '—' }}</span>
-            <span class="parts-make">{{ job.appointment?.vehicle_make || '—' }} {{ job.appointment?.vehicle_year || ''
-              }}</span>
-            <span class="parts-services">{{ formatServices(job.Services) }}</span>
-            <span class="parts-arrival"
-              :class="{ 'parts-arrival--overdue': isOverdue(job.expected_parts_arrival_date) }">
-              {{ formatDate(job.expected_parts_arrival_date) }}
-            </span>
-          </div>
-        </div>
-      </div>
-    </section>
+
   </div>
 </template>
 
