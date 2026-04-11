@@ -846,63 +846,43 @@ export default {
       this.confirmModal.targetStatus = '';
     },
 
-    async confirmProceed() {
-<<<<<<< Updated upstream
+    async confirmProcess() {
       if (!this.confirmModal.job || !this.confirmModal.targetStatus) return;
-=======
-      if (this.confirmModal.job && this.confirmModal.targetStatus) {
-        try {
-          const orderId = this.confirmModal.job.id
-          const newStatus = this.confirmModal.targetStatus
-          
-          console.log('🔄 Calling:', `/api/job-orders/${orderId}/status`)
-          
-          const response = await fetch(`http://localhost:3000/api/job-orders/${orderId}/status`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              status: newStatus,
-              customerEmail: this.confirmModal.job.customerEmail || '',
-              customerName: this.confirmModal.job.customerName || '',
-              licensePlate: this.confirmModal.job.licensePlate || ''
-            })
-          })
->>>>>>> Stashed changes
-
-      const { job, targetStatus } = this.confirmModal;
-      const token = localStorage.getItem('token');
 
       try {
-        const res = await fetch(`http://localhost:3000/api/jobOrders/${job.id}/status`, {
-          method:  'PUT',
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body:    JSON.stringify({
-            status: this.mapStatusToDb(targetStatus),
-          }),
+        const newStatus = this.confirmModal.targetStatus;
+        console.log(`Calling: /api/job-orders/${this.confirmModal.job.id}/status`);
+
+        const response = await fetch(`http://localhost:3000/api/job-orders/${this.confirmModal.job.id}/status`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            customerEmail: this.confirmModal.job.customerEmail,
+            customerName: this.confirmModal.job.customerName,
+            status: newStatus,
+            orderId: this.confirmModal.job.id,
+            licensePlate: this.confirmModal.job.licensePlate
+          })  // ← Fixed: proper object closing
         });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.error ?? err.message ?? `HTTP ${res.status}`);
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || data.message || 'Status update failed');
         }
 
-        const result = await res.json();
-        job.status = targetStatus;
-
-        const statusDateMap = {
-          'quotation':         result.data?.Quotation,
-          'waiting-for-parts': result.data?.Waiting_For_Parts,
-          'service':           result.data?.Service,
-          'ready':             result.data?.Ready,
-          'check-out':         result.data?.Check_Out,
-        };
-        job.jobDate = statusDateMap[targetStatus] ?? job.jobDate;
-
-      } catch (err) {
-        console.error('Status update failed:', err);
-        alert(`❌ ${err.message}`);
+        console.log('✅ Status updated:', data);
+        
+        // Close modal and refresh data
+        this.closeConfirmModal();
+        await this.refreshJobData();  // Assuming you have this method
+        
+      } catch (error) {
+        console.error('❌ Status update failed:', error);
+        alert(`Failed to update status: ${error.message}`);
       }
-
-      this.closeConfirmModal();
     },    
   // ── Formatting ────────────────────────────────────────────────────────
     formatDate(date) {
