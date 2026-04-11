@@ -25,18 +25,22 @@ const routes = [
   { path: '/gallery', name: 'gallery', component: () => import('../views/GalleryView.vue') },
   { path: '/login', name: 'login', component: () => import('../views/LoginView.vue') },
   { path: '/contact', name: 'contact', component: () => import('../views/ContactView.vue') },
-  
-  { path: '/book',
-    name: 'book', 
-    meta: { requiresAuth: true, roles: ['customer'] },
-    component: () => import('../views/Customer/BookingView.vue') },
 
-  { path: '/myBookings', 
-    name: 'customerBookings', 
+  {
+    path: '/book',
+    name: 'book',
     meta: { requiresAuth: true, roles: ['customer'] },
-    component: () => import('../views/Customer/customerBookings.vue') },
+    component: () => import('../views/Customer/BookingView.vue')
+  },
 
-  
+  {
+    path: '/myBookings',
+    name: 'customerBookings',
+    meta: { requiresAuth: true, roles: ['customer'] },
+    component: () => import('../views/Customer/customerBookings.vue')
+  },
+
+
   // 🔹 MANAGER ROUTES
   {
     path: '/manager-dashboard',
@@ -67,13 +71,13 @@ const routes = [
     path: '/technician-dashboard',
     name: 'technicianDashboard',
     meta: { requiresAuth: true, roles: ['technician'] },
-    component: () => import('../views/TechnicianDashboard.vue'), // CREATE THIS
+    component: () => import('../views/Technician/TechnicianDashboard.vue'),
   },
   {
     path: '/technicianJobs',
     name: 'technicianJobs',
     meta: { requiresAuth: true, roles: ['technician'] },
-    component: () => import('../views/Technician/TechnicianJobs.vue'), // CREATE THIS
+    component: () => import('../views/Technician/TechnicianJobs.vue'),
   },
   // 🔹 SHARED STAFF ROUTES (manager + technician)
   // to add view all job cards for them
