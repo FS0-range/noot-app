@@ -347,18 +347,18 @@ export default {
 }
 
 .appt-badge {
+  font-family: 'Times New Roman', Times, serif;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 17px;
-  height: 17px;
-  padding: 0 5px;
-  border-radius: 9px;
-  background: #eec10e;
+  width: 19px;
+  height: 19px;
+  border-radius: 19px;
+  background: #ffd700;
   color: #000;
-  font-size: 0.65rem;
+  padding-left: 2px;
+  font-size: 0.8rem;
   font-weight: 700;
-  line-height: 1;
   margin-left: 6px;
   vertical-align: middle;
 }
