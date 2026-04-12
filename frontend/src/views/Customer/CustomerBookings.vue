@@ -841,7 +841,7 @@ export default {
       this.bookingsError = null
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:3000/api/customer/getAppointments', {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/customer/getAppointments`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         const json = await response.json()
@@ -870,7 +870,7 @@ export default {
       this.finishedJobsError = null
       try {
         const token    = localStorage.getItem('token')
-        const response = await fetch('http://localhost:3000/api/jobOrders/getJobOrders', {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/jobOrders/getJobOrders`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (response.status === 404) {
@@ -933,7 +933,7 @@ export default {
     async fetchEditBookedSlots() {
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:3000/api/customer/bookedSlots', {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/customer/bookedSlots`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         const data = await response.json()
@@ -981,7 +981,7 @@ export default {
 
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch(`http://localhost:3000/api/customer/editAppointment/${this.modal.booking.id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/customer/editAppointment/${this.modal.booking.id}`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -1020,7 +1020,7 @@ export default {
 
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch(`http://localhost:3000/api/customer/cancelAppointment/${this.modal.booking.id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/customer/cancelAppointment/${this.modal.booking.id}`, {
           method: 'PUT',
           headers: { Authorization: `Bearer ${token}` },
         })

@@ -392,7 +392,7 @@ export default {
       try {
         const token = localStorage.getItem('token')
         if (!token) throw new Error('Not authenticated.')
-        const res = await fetch('http://localhost:3000/api/manager/jobCards?limit=500&page=1', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/manager/jobCards?limit=500&page=1`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         const result = await res.json()
@@ -411,7 +411,7 @@ export default {
       try {
         const token = localStorage.getItem('token')
         if (!token) throw new Error('Not authenticated.')
-        const res = await fetch('http://localhost:3000/api/manager/getAllAppointments', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/manager/getAllAppointments`, {
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
         })
         const json = await res.json()

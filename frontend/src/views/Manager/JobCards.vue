@@ -678,7 +678,7 @@ export default {
       this.loadError = null;
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:3000/api/manager/jobCards', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/manager/jobCards`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) {
@@ -706,7 +706,7 @@ export default {
     async fetchTechnicians() {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:3000/api/technicians/getTechnicians', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/technicians/getTechnicians`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) {
@@ -766,7 +766,7 @@ export default {
       const token  = localStorage.getItem('token');
 
       try {
-        const res = await fetch(`http://localhost:3000/api/jobOrders/${job.id}/serviceTechnician`, {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/jobOrders/${job.id}/serviceTechnician`, {
           method:  'PUT',
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
           body:    JSON.stringify({ technician_id: techId }),
@@ -810,7 +810,7 @@ export default {
 
       try {
         // 1. Update status to waiting_for_parts
-        const statusRes = await fetch(`http://localhost:3000/api/jobOrders/${job.id}/status`, {
+        const statusRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/jobOrders/${job.id}/status`, {
           method:  'PUT',
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
           body:    JSON.stringify({ status: 'waiting_for_parts' }),
@@ -823,7 +823,7 @@ export default {
         job.jobDate          = statusJson.data?.Waiting_For_Parts ?? job.jobDate;
 
         // 2. Update expected_parts_arrival_date
-        const dateRes = await fetch(`http://localhost:3000/api/jobOrders/${job.id}/partsArrival`, {
+        const dateRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/jobOrders/${job.id}/partsArrival`, {
           method:  'PUT',
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
           body:    JSON.stringify({ expected_parts_arrival_date: date }),
@@ -857,7 +857,7 @@ export default {
         console.log('targetStatus:', newStatus);
         console.log('mappedStatus:', mappedStatus);
 
-        const response = await fetch(`http://localhost:3000/api/jobOrders/${this.confirmModal.job.id}/status`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/jobOrders/${this.confirmModal.job.id}/status`, {
           method: 'PUT',
           headers: {
             Authorization: `Bearer ${token}`,

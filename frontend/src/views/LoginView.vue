@@ -69,7 +69,7 @@ const handleLogin = async () => {
     localStorage.setItem('token', token)
 
     // ✅ 3. Call backend ONLY to fetch profile
-    const res = await fetch('http://localhost:3000/api/auth/login', {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -120,7 +120,7 @@ const handleRegister = async () => {
   error.value = ''
 
   try {
-    const res = await fetch('http://localhost:3000/api/auth/register', {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

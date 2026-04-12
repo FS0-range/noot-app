@@ -252,7 +252,7 @@ export default {
     },
     async fetchBookedSlots() {
       try {
-        const response = await fetch('http://localhost:3000/api/customer/bookedSlots')
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/customer/bookedSlots')
         const data = await response.json()
         this.bookedSlots = data.data || []
       } catch (err) {
@@ -280,7 +280,7 @@ export default {
       this.isLoading = true
 
       try {
-        const response = await fetch('http://localhost:3000/api/customer/createAppointment', {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/customer/createAppointment`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -328,7 +328,7 @@ export default {
     },
     async notifyManagerNewAppointment() {
     try {
-      await fetch('http://localhost:3000/api/email/manager-new-appointment', {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/email/manager-new-appointment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

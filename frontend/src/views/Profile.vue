@@ -325,7 +325,7 @@ export default {
         if (!token) { this.$router.push('/login'); return; }
 
         // Verify current password
-        const verifyRes = await fetch('http://localhost:3000/api/auth/login', {
+        const verifyRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: this.profile.email, password: this.form.current }),
@@ -333,7 +333,7 @@ export default {
 
         if (!verifyRes.ok) { this.error = 'Current password is incorrect.'; return; }
 
-        const res = await fetch('http://localhost:3000/api/auth/change-password', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/change-password`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

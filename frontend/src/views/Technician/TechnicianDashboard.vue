@@ -337,7 +337,7 @@ export default {
       try {
         const token = localStorage.getItem('token')
         if (!token) throw new Error('Not authenticated.')
-        const res = await fetch('http://localhost:3000/api/technicians/myJobCards?limit=500&page=1', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/technicians/myJobCards?limit=500&page=1`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         const result = await res.json()

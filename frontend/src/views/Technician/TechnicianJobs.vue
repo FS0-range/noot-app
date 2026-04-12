@@ -627,7 +627,7 @@ export default {
       try {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('Not authenticated. Please log in again.');
-        const res  = await fetch('http://localhost:3000/api/technicians/getAppointments', {
+        const res  = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/technicians/getAppointments`, {
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         });
         const json = await res.json();
@@ -660,7 +660,7 @@ export default {
       try {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('Not authenticated. Please log in again.');
-        const res  = await fetch('http://localhost:3000/api/jobOrders/getTechnicianJobOrders', {
+        const res  = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/jobOrders/getTechnicianJobOrders`, {
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         });
         const json = await res.json();
@@ -732,7 +732,7 @@ export default {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('Not authenticated. Please log in again.');
 
-        const res  = await fetch(`http://localhost:3000/api/jobOrders/${job.id}/status`, {
+        const res  = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/jobOrders/${job.id}/status`, {
           method:  'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -782,8 +782,8 @@ export default {
       if (!token) throw new Error('Not authenticated. Please log in again.');
 
       const endpoint = type === 'parts'
-        ? `http://localhost:3000/api/joborders/${job.id}/parts`
-        : `http://localhost:3000/api/joborders/${job.id}/services`;
+        ? `${import.meta.env.VITE_API_BASE_URL}/api/joborders/${job.id}/parts`
+        : `${import.meta.env.VITE_API_BASE_URL}/api/joborders/${job.id}/services`;
 
       const body = type === 'parts'
         ? { parts: selected.join(',') }

@@ -215,7 +215,7 @@ export default {
     async fetchUnreadCount() {
       try {
         const token = localStorage.getItem('token')
-        const res = await fetch('http://localhost:3000/api/manager/appointments/unread-count', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/manager/appointments/unread-count`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         const json = await res.json()

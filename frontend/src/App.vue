@@ -21,7 +21,7 @@ onMounted(async () => {
   if (token) {
     try {
       // Verify token with backend
-      const res = await fetch('http://localhost:3000/api/auth/verify', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ const logout = async () => {
   
   if (token) {
     try {
-      await fetch('http://localhost:3000/api/auth/logout', {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       })

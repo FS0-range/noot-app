@@ -114,7 +114,7 @@ router.beforeEach(async (to, from, next) => {
 
   // Verify token + role with backend
   try {
-    const res = await fetch('http://localhost:3000/api/auth/verify', {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/verify`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

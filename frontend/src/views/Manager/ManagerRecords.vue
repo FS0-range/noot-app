@@ -405,7 +405,7 @@ export default {
           if (f.value) params.append(f.field, f.value)
         })
 
-        const res = await fetch(`http://localhost:3000/api/manager/records/appointments?${params}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/manager/records/appointments?${params}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -460,7 +460,7 @@ export default {
           if (f.value) params.append(f.field, f.value)
         })
 
-        const res = await fetch(`http://localhost:3000/api/manager/records/jobOrders?${params}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/manager/records/jobOrders?${params}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         const result = await res.json()

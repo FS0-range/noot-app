@@ -485,7 +485,7 @@ export default {
       try {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('Not authenticated. Please log in again.');
-        const res = await fetch('http://localhost:3000/api/manager/getAllAppointments', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/manager/getAllAppointments`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -526,7 +526,7 @@ export default {
       this.technicianError = '';
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:3000/api/technicians/getTechnicians', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/technicians/getTechnicians`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -572,7 +572,7 @@ export default {
         if (!token) throw new Error('Not authenticated. Please log in again.');
 
         // 1) Create the job card
-        const res = await fetch('http://localhost:3000/api/jobOrders/createJobCard', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/jobOrders/createJobCard`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -638,7 +638,7 @@ export default {
       try {
         const token = localStorage.getItem('token');
         const res = await fetch(
-          `http://localhost:3000/api/manager/${this.assignTech.appt.id}/technician`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/manager/${this.assignTech.appt.id}/technician`,
           {
             method: 'PUT',
             headers: {
@@ -692,7 +692,7 @@ export default {
       try {
         const token = localStorage.getItem('token');
         const res = await fetch(
-          `http://localhost:3000/api/manager/cancelAppointment/${this.cancelConfirm.appt.id}`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/manager/cancelAppointment/${this.cancelConfirm.appt.id}`,
           {
             method: 'PUT',
             headers: {
@@ -726,7 +726,7 @@ export default {
     async notifyAppointmentStatusUpdate(appointmentId, status, customerEmail) {
       const token = localStorage.getItem('token');
 
-      const res = await fetch(`http://localhost:3000/api/appointments/${appointmentId}/status`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/appointments/${appointmentId}/status`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
