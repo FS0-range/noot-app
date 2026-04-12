@@ -618,7 +618,7 @@ export default {
         'service':           'service',
         'ready':             'ready',
         'check-out':         'check_out',
-      };
+      };      
       return map[frontendStatus] ?? frontendStatus;
     },
 
@@ -847,24 +847,23 @@ export default {
     },
 
     async confirmProceed() {
+      const token = localStorage.getItem('token');
       if (!this.confirmModal.job || !this.confirmModal.targetStatus) return;
 
       try {
-        const newStatus = this.confirmModal.targetStatus;
-        console.log(`Calling: /api/job-orders/${this.confirmModal.job.id}/status`);
+        const newStatus    = this.confirmModal.targetStatus;
+        const mappedStatus = this.mapStatusToDb(newStatus);
 
-        const response = await fetch(`http://localhost:3000/api/job-orders/${this.confirmModal.job.id}/status`, {
-          method: 'POST',
+        console.log('targetStatus:', newStatus);
+        console.log('mappedStatus:', mappedStatus);
+
+        const response = await fetch(`http://localhost:3000/api/jobOrders/${this.confirmModal.job.id}/status`, {
+          method: 'PUT',
           headers: {
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            customerEmail: this.confirmModal.job.customerEmail,
-            customerName: this.confirmModal.job.customerName,
-            status: newStatus,
-            orderId: this.confirmModal.job.id,
-            licensePlate: this.confirmModal.job.licensePlate
-          })  // ← Fixed: proper object closing
+          body: JSON.stringify({ status: mappedStatus }),
         });
 
         const data = await response.json();
@@ -874,17 +873,17 @@ export default {
         }
 
         console.log('✅ Status updated:', data);
-        
-        // Close modal and refresh data
+
+        this.confirmModal.job.status = newStatus;
         this.closeConfirmModal();
-        await this.refreshJobData();  // Assuming you have this method
-        
+        await this.fetchJobCards();
+
       } catch (error) {
         console.error('❌ Status update failed:', error);
         alert(`Failed to update status: ${error.message}`);
       }
-    },    
-  // ── Formatting ────────────────────────────────────────────────────────
+    },  
+// ── Formatting ────────────────────────────────────────────────────────
     formatDate(date) {
       if (!date) return 'N/A';
       return sgLocaleDate(`${date}T00:00:00+08:00`, 'en-US', {

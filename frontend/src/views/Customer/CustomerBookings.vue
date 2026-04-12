@@ -566,6 +566,7 @@ const ORDER_STATUS_MAP = {
   'service':           'service',
   'ready':             'ready',
   'check-out':         'completed',
+  'check_out':         'completed', 
 }
 
 // Statuses that belong in the Active Jobs tab (no Check_Out yet)
