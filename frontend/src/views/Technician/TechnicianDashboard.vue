@@ -135,7 +135,8 @@
           <div v-for="(job, i) in waitingJobs" :key="i" class="parts-table-row">
             <span class="parts-id">{{ shortId(job.Order_ID) }}</span>
             <span class="parts-plate">{{ job.appointment?.vehicle_license_plate || '—' }}</span>
-            <span class="parts-make">{{ job.appointment?.vehicle_make || '—' }} {{ job.appointment?.vehicle_year || '' }}</span>
+            <span class="parts-make">{{ job.appointment?.vehicle_make || '—' }} {{ job.appointment?.vehicle_year || ''
+              }}</span>
             <span class="parts-services">{{ formatServices(job.Services) }}</span>
             <span class="parts-arrival"
               :class="{ 'parts-arrival--overdue': isOverdue(job.expected_parts_arrival_date) }">
@@ -274,10 +275,18 @@ export default {
 
     // ══════════════════ Upcoming Jobs ══════════════════
     upcomingJobs() {
+      const DONE_STATUSES = new Set([
+        'Check Out',
+        'Check_Out',
+        'check_out',
+        'completed',
+        'Completed',
+        'cancelled',
+        'PRM - Check Out - PRM',
+      ])
       return this.myJobs
         .filter(o =>
-          o.Order_Status !== 'Check Out' &&
-          o.Order_Status !== 'cancelled' &&
+          !DONE_STATUSES.has(o.Order_Status) &&
           o._roles && o._roles.length > 0
         )
         .sort((a, b) => {

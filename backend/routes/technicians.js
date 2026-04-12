@@ -77,6 +77,7 @@ module.exports = (supabase) => {
           )
         `)
                 .eq('service_technician_id', techId)
+                .not('Order_Status', 'in', '("Check Out","Check_Out","check_out","completed","Completed","cancelled","PRM - Check Out - PRM")')
                 .range(from, to)
 
             if (e1) return res.status(400).json({ error: e1.message })
@@ -110,6 +111,7 @@ module.exports = (supabase) => {
           )
         `)
                 .eq('technician_id', techId)
+                .not('status', 'in', '("completed","cancelled","Check Out","Check_Out")')
                 .range(from, to)
 
             if (e2) return res.status(400).json({ error: e2.message })
