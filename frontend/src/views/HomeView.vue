@@ -30,10 +30,10 @@ onMounted(() => {
 })
 
 const serviceItems = [
-  { icon: 'wrench',    title: 'Engine Repair',  desc: 'Full diagnostics & rebuilds with OEM parts'  },
-  { icon: 'tyre',      title: 'Tyre & Brake',   desc: 'Safety certified premium service'             },
-  { icon: 'settings',  title: 'Full Servicing', desc: 'Oil, AC, and scheduled maintenance'           },
-  { icon: 'car',       title: 'Body Work',      desc: 'Expert dent repair & precision painting'      },
+  { icon: 'wrench', title: 'Engine Repair', desc: 'Full diagnostics & rebuilds with OEM parts' },
+  { icon: 'tyre', title: 'Tyre & Brake', desc: 'Safety certified premium service' },
+  { icon: 'settings', title: 'Full Servicing', desc: 'Oil, AC, and scheduled maintenance' },
+  { icon: 'car', title: 'Body Work', desc: 'Expert dent repair & precision painting' },
 ]
 </script>
 
@@ -59,7 +59,7 @@ const serviceItems = [
         </p>
         <div class="hero-buttons">
           <a href="#services" class="btn btn-primary">Explore Services</a>
-          <a href="#contact"  class="btn btn-primary">Contact Us</a>
+          <a href="#contact" class="btn btn-primary">Contact Us</a>
         </div>
       </div>
 
@@ -77,29 +77,30 @@ const serviceItems = [
         </div>
 
         <div class="services-grid">
-          <div
-            v-for="(service, i) in serviceItems"
-            :key="service.title"
-            class="service-card"
-            :class="{ 'is-visible': servicesVisible }"
-            :style="{ '--delay': i * 0.15 + 's' }"
-          >
+          <div v-for="(service, i) in serviceItems" :key="service.title" class="service-card"
+            :class="{ 'is-visible': servicesVisible }" :style="{ '--delay': i * 0.15 + 's' }">
             <div class="service-icon-wrap">
-              <svg v-if="service.icon === 'wrench'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              <svg v-if="service.icon === 'wrench'" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
+                <path
+                  d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
               </svg>
-              <svg v-else-if="service.icon === 'tyre'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <circle cx="12" cy="12" r="10"/>
-                <circle cx="12" cy="12" r="3"/>
+              <svg v-else-if="service.icon === 'tyre'" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="3" />
               </svg>
-              <svg v-else-if="service.icon === 'settings'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-                <circle cx="12" cy="12" r="3"/>
+              <svg v-else-if="service.icon === 'settings'" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
+                <path
+                  d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                <circle cx="12" cy="12" r="3" />
               </svg>
-              <svg v-else-if="service.icon === 'car'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
-                <path d="M19 17H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1l2-3h6l2 3h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2z"/>
-                <circle cx="7.5" cy="14.5" r="1.5"/>
-                <circle cx="16.5" cy="14.5" r="1.5"/>
+              <svg v-else-if="service.icon === 'car'" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="service-icon">
+                <path d="M19 17H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1l2-3h6l2 3h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2z" />
+                <circle cx="7.5" cy="14.5" r="1.5" />
+                <circle cx="16.5" cy="14.5" r="1.5" />
               </svg>
             </div>
             <h3 class="service-card-title">{{ service.title }}</h3>
@@ -135,7 +136,7 @@ const serviceItems = [
         <p class="cta-eyebrow">Ready to Start?</p>
         <h2 class="cta-title">Book Your Service</h2>
         <p class="cta-sub">Experience excellence with Porschify's tailored automotive care.</p>
-        <router-link to="/login" class="cta-bin">Get a Quote</router-link>
+        <router-link to="/login" class="cta-bin">JOIN</router-link>
       </div>
     </section>
 
@@ -145,11 +146,11 @@ const serviceItems = [
 <style scoped>
 /* ─── TOKENS ──────────────────────────────────────────────── */
 :root {
-  --gold:      #fdc601;
+  --gold: #fdc601;
   --gold-glow: rgba(253, 198, 1, 0.55);
-  --fg:        #ffffff;
-  --fg-muted:  rgba(255,255,255,0.65);
-  --bg-dark:   #0a0a0a;
+  --fg: #ffffff;
+  --fg-muted: rgba(255, 255, 255, 0.65);
+  --bg-dark: #0a0a0a;
 }
 
 /* ─── BASE ────────────────────────────────────────────────── */
@@ -183,14 +184,18 @@ const serviceItems = [
 
 .hero-bg {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
   height: 100%;
 }
 
 .hero-img {
   position: absolute;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -201,12 +206,10 @@ const serviceItems = [
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(10, 10, 10, 0.55) 0%,
-    rgba(10, 10, 10, 0.35) 45%,
-    rgba(10, 10, 10, 1.00) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(10, 10, 10, 0.55) 0%,
+      rgba(10, 10, 10, 0.35) 45%,
+      rgba(10, 10, 10, 1.00) 100%);
 }
 
 /* Content block — flattened nesting for Vue scoped compatibility */
@@ -220,17 +223,36 @@ const serviceItems = [
 }
 
 /* All direct children start invisible */
-.hero-content > * {
+.hero-content>* {
   opacity: 0;
   transform: translateY(24px);
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
 /* Staggered reveal on each child */
-.hero-content.is-visible > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.3s; }
-.hero-content.is-visible > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.5s; }
-.hero-content.is-visible > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.7s; }
-.hero-content.is-visible > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.9s; }
+.hero-content.is-visible>*:nth-child(1) {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.3s;
+}
+
+.hero-content.is-visible>*:nth-child(2) {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.5s;
+}
+
+.hero-content.is-visible>*:nth-child(3) {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.7s;
+}
+
+.hero-content.is-visible>*:nth-child(4) {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.9s;
+}
 
 .hero-eyebrow {
   font-size: clamp(0.7rem, 1.5vw, 0.875rem);
@@ -261,7 +283,7 @@ const serviceItems = [
 
 .hero-subtitle {
   font-size: clamp(1rem, 2.5vw, 1.2rem);
-  color: rgba(255,255,255,0.75);
+  color: rgba(255, 255, 255, 0.75);
   font-weight: 300;
   line-height: 1.75;
   max-width: 600px;
@@ -277,7 +299,9 @@ const serviceItems = [
 }
 
 @media (min-width: 640px) {
-  .hero-buttons { flex-direction: row; }
+  .hero-buttons {
+    flex-direction: row;
+  }
 }
 
 /* ─── BUTTONS ─────────────────────────────────────────────── */
@@ -303,6 +327,7 @@ const serviceItems = [
   color: #ffffff;
   border: 0.5px solid #ffffff;
 }
+
 .btn-primary:hover {
   background: #fdc601;
   transform: translateY(-2px);
@@ -319,18 +344,28 @@ const serviceItems = [
   opacity: 0;
   transition: opacity 0.8s ease 1.5s;
 }
-.scroll-indicator.is-visible { opacity: 1; }
+
+.scroll-indicator.is-visible {
+  opacity: 1;
+}
 
 .scroll-line {
   width: 1px;
   height: 4rem;
-  background: linear-gradient(to bottom, transparent, rgba(253,198,1,0.5), #fdc601);
+  background: linear-gradient(to bottom, transparent, rgba(253, 198, 1, 0.5), #fdc601);
   animation: scroll-pulse 1.8s ease-in-out infinite;
 }
 
 @keyframes scroll-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
 }
 
 /* ─── SERVICES ────────────────────────────────────────────── */
@@ -352,7 +387,11 @@ const serviceItems = [
   transform: translateY(30px);
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
-.services-header.is-visible { opacity: 1; transform: none; }
+
+.services-header.is-visible {
+  opacity: 1;
+  transform: none;
+}
 
 .services-eyebrow {
   font-size: 0.75rem;
@@ -378,12 +417,22 @@ const serviceItems = [
   grid-template-columns: 1fr;
   gap: 1.5rem;
 }
-@media (min-width: 640px)  { .services-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1024px) { .services-grid { grid-template-columns: repeat(4, 1fr); } }
+
+@media (min-width: 640px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .services-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
 
 .service-card {
   background: #141414;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: clamp(2rem, 4vw, 2.5rem);
   cursor: pointer;
   opacity: 0;
@@ -395,11 +444,16 @@ const serviceItems = [
     background 0.5s ease,
     box-shadow 0.5s ease;
 }
-.service-card.is-visible { opacity: 1; transform: none; }
+
+.service-card.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
 .service-card:hover {
   border-color: rgba(253, 198, 1, 0.4);
   background: #161616;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
 }
 
 .service-icon-wrap {
@@ -409,9 +463,16 @@ const serviceItems = [
   margin-bottom: 1.5rem;
   transition: transform 0.3s ease;
 }
-.service-card:hover .service-icon-wrap { transform: scale(1.1); }
 
-.service-icon { width: 100%; height: 100%; display: block; }
+.service-card:hover .service-icon-wrap {
+  transform: scale(1.1);
+}
+
+.service-icon {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 
 .service-card-title {
   font-size: 1.2rem;
@@ -467,12 +528,28 @@ const serviceItems = [
 /* ─── CTA ─────────────────────────────────────────────────── */
 .cta-banner {
   padding: clamp(4rem, 10vw, 8rem) 0;
-  background:#000;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  background: #000;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .cta-bin {
-  color: #fdc601;
+  padding: 0.55rem 1.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: #eec10e;
+  color: #000 !important;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border-radius: 0;
+  white-space: nowrap;
+}
+.cta-bin:hover {
+ background: #df9f2a;
+  text-decoration: none;
+  color: #000 !important;
 }
 
 .cta-inner {
@@ -484,7 +561,11 @@ const serviceItems = [
   transform: translateY(30px);
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
-.cta-inner.is-visible { opacity: 1; transform: none; }
+
+.cta-inner.is-visible {
+  opacity: 1;
+  transform: none;
+}
 
 .cta-eyebrow {
   font-size: 0.75rem;
@@ -506,11 +587,11 @@ const serviceItems = [
 }
 
 .cta-sub {
-  color:#bdb9b9;
+  color: #bdb9b9;
   font-size: 1.3rem;
   font-weight: 400;
   margin: 0 0 2.5rem;
-  font-family:Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 /* CTA button — sharp, gold fill, uppercase tracking */
@@ -529,22 +610,31 @@ const serviceItems = [
   cursor: pointer;
   transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .cta-btn:hover {
-  background:transparent;
+  background: transparent;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(253, 198, 1, 0.3);
-  color:#ffffff;
+  color: #ffffff;
   text-decoration: none;
-  border:0.5px solid #ffffff;
+  border: 0.5px solid #ffffff;
 }
 
 /* ─── MOBILE ──────────────────────────────────────────────── */
 @media (max-width: 480px) {
-  .container { padding: 0 1rem; }
-  .hero-buttons .btn { width: 100%; max-width: 300px; }
+  .container {
+    padding: 0 1rem;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+    max-width: 300px;
+  }
 }
 
 @media (max-height: 500px) and (orientation: landscape) {
-  .hero { min-height: 100vh; }
+  .hero {
+    min-height: 100vh;
+  }
 }
 </style>

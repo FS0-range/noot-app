@@ -399,7 +399,7 @@ export default {
 }
 
 .btn-login:hover {
-  background: #ffffff;
+  background: #df9f2a;
   text-decoration: none;
   color: #000 !important;
 }
