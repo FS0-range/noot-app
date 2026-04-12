@@ -533,6 +533,7 @@ const serviceItems = [
 }
 
 .cta-bin {
+  font-family: Georgia, 'Times New Roman', Times, serif;
   padding: 0.55rem 1.5rem;
   font-size: 0.78rem;
   font-weight: 600;
