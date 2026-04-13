@@ -200,8 +200,19 @@ export default {
   data() {
     return {
       jobsLoading: false,
-      myJobs: [],
-      apiSummary: { totalDiagnose: 0, totalService: 0, bothRoles: 0 },
+      myJobs: [
+        { Order_ID: 'ORD00001', Order_Status: 'Check Out', Check_Out: new Date().toISOString(), Services: 'Oil Change, Tyre Rotation', appointment: { appointment_date: new Date().toISOString(), vehicle_make: 'Toyota', vehicle_license_plate: 'SBA1234A', vehicle_year: 2020 }, _roles: ['diagnose'] },
+        { Order_ID: 'ORD00002', Order_Status: 'Check Out', Check_Out: new Date().toISOString(), Services: 'Brake Inspection, Air Filter', appointment: { appointment_date: new Date().toISOString(), vehicle_make: 'Honda', vehicle_license_plate: 'SBB5678B', vehicle_year: 2019 }, _roles: ['service'] },
+        { Order_ID: 'ORD00003', Order_Status: 'Check Out', Check_Out: new Date().toISOString(), Services: 'Oil Change', appointment: { appointment_date: new Date().toISOString(), vehicle_make: 'Mazda', vehicle_license_plate: 'SBC9012C', vehicle_year: 2021 }, _roles: ['service'] },
+        { Order_ID: 'ORD00004', Order_Status: 'Check Out', Check_Out: new Date().toISOString(), Services: 'Tyre Rotation, Wheel Alignment', appointment: { appointment_date: new Date().toISOString(), vehicle_make: 'Toyota', vehicle_license_plate: 'SBD3456D', vehicle_year: 2018 }, _roles: ['diagnose'] },
+        { Order_ID: 'ORD00005', Order_Status: 'Check Out', Check_Out: new Date().toISOString(), Services: 'Spark Plug Replacement', appointment: { appointment_date: new Date().toISOString(), vehicle_make: 'BMW', vehicle_license_plate: 'SBE7890E', vehicle_year: 2022 }, _roles: ['service'] },
+        { Order_ID: 'ORD00006', Order_Status: 'In Progress', Services: 'Brake Inspection', appointment: { appointment_date: (() => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString() })(), vehicle_make: 'Honda', vehicle_license_plate: 'SBF2345F', vehicle_year: 2020 }, _roles: ['service'] },
+        { Order_ID: 'ORD00007', Order_Status: 'In Progress', Services: 'Oil Change, Air Filter', appointment: { appointment_date: (() => { const d = new Date(); d.setDate(d.getDate() + 2); return d.toISOString() })(), vehicle_make: 'Nissan', vehicle_license_plate: 'SBG6789G', vehicle_year: 2017 }, _roles: ['diagnose'] },
+        { Order_ID: 'ORD00008', Order_Status: 'Waiting For Parts', Services: 'Suspension Repair', expected_parts_arrival_date: (() => { const d = new Date(); d.setDate(d.getDate() + 3); return d.toISOString() })(), appointment: { appointment_date: (() => { const d = new Date(); d.setDate(d.getDate() + 3); return d.toISOString() })(), vehicle_make: 'Mazda', vehicle_license_plate: 'SBH1234H', vehicle_year: 2019 }, _roles: ['service'] },
+        { Order_ID: 'ORD00009', Order_Status: 'Waiting For Parts', Services: 'Timing Belt', expected_parts_arrival_date: (() => { const d = new Date(); d.setDate(d.getDate() + 5); return d.toISOString() })(), appointment: { appointment_date: (() => { const d = new Date(); d.setDate(d.getDate() + 5); return d.toISOString() })(), vehicle_make: 'Toyota', vehicle_license_plate: 'SBI5678I', vehicle_year: 2016 }, _roles: ['diagnose'] },
+        { Order_ID: 'ORD00010', Order_Status: 'Ready', Services: 'Wheel Alignment', appointment: { appointment_date: (() => { const d = new Date(); d.setDate(d.getDate() + 4); return d.toISOString() })(), vehicle_make: 'BMW', vehicle_license_plate: 'SBJ9012J', vehicle_year: 2023 }, _roles: ['service'] },
+      ],
+      apiSummary: { totalDiagnose: 4, totalService: 6, bothRoles: 1 },
     }
   },
 
@@ -327,7 +338,7 @@ export default {
     },
   },
 
-  mounted() { this.refreshAll() },
+  mounted() { /* refreshAll() skipped — using hardcoded demo data */ },
 
   methods: {
     refreshAll() { this.fetchMyJobs() },
