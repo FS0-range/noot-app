@@ -591,7 +591,7 @@ export default {
         // 2) Reuse the existing function to update status + send email
         await this.notifyAppointmentStatusUpdate(
           appt.id,
-          'in diagnosis',
+          'completed',
           appt.customerEmail
         );
 
