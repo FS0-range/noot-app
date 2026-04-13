@@ -13,7 +13,7 @@ async function sendEmail({ to, subject, html }) {
       },
       body: JSON.stringify({
         from: process.env.FROM_EMAIL || 'Porschify <no-reply@porschify.com>',
-        to,
+        to: "teamnoot1@gmail.com",
         subject,
         html,
       }),
@@ -54,7 +54,7 @@ async function sendStatusEmail({
     <p>– Porschify</p>
   `;
 
-  return sendEmail({ to, subject, html });
+  return sendEmail({ to: "teamnoot1@gmail.com", subject, html });
 }
 
 async function sendMgrNewAppointmentEmail() {
